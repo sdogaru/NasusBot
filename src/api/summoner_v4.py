@@ -3,7 +3,6 @@ import urllib
 
 class summoner_v4(Api):
     def __init__(self):
-        super().__init__()
         self.endpoint_url = "summoner/v4/summoners/"
 
     """Given a players username, returns corresponding encryptedaccountID"""

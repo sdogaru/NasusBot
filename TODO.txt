@@ -1,0 +1,35 @@
+https://baronbot.github.io/
+
+reconstruct leagueData.py from bottom up w/ good coding practices.
+Add tests using unittest for each api request. Hardcode usernames, champions etc.
+
+main driver in root directory:
+- contain one reference to API for each section
+- used for processing/method for every command for discord bot.
+
+apis:
+- each one inherits from the api class, and represents a section of the riot api. Essentially a wrapper, no data processing asides from what exactly is returned from the json
+
+
+Add tests for each api request. Hardcode usernames, champions etc.
+
+incorporate ratelimit support. Somehow
+
+list of commands
+!help
+!commands
+!disable
+!enable
+--------------------------------------------------------------
+!mastery [username]
+- display a formatted discord message regarding masteries returned by https://developer.riotgames.com/apis#champion-mastery-v4
+
+!duo [user1] [user2]
+- return duo w/r for two players over last ? games
+
+!duo [user1] [champion1] [user2] [champion2]
+
+!wr [username] [optional:champion]
+- return user winrate w or w/o champion 
+
+!cstrend [user1]

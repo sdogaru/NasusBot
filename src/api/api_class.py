@@ -11,9 +11,8 @@ API_KEY = os.getenv('API_KEY')
    API Key and base url for riot api
 """
 class Api:
-    def __init__(self):
-        self.api_key = API_KEY
-        self.base_url = "https://na1.api.riotgames.com/lol/"
+    api_key = API_KEY
+    base_url = "https://na1.api.riotgames.com/lol/"
 
     """Riot API request handler to be used by all subclasses in their calls"""
     def make_request(self,url):
