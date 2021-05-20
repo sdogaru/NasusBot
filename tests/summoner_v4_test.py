@@ -20,6 +20,7 @@ class Test_summoner_v4(unittest.TestCase):
         result = sv4.username_to_encryptedAccountID(";;;;;;;;")
         self.assertEqual(result,-1)
 
+    # access account level for an account i dont use anymore
     def test_username_to_level(self):
         sv4 = summoner_v4()
         result = sv4.username_to_level("Faze Seby")
@@ -28,11 +29,11 @@ class Test_summoner_v4(unittest.TestCase):
 
         self.assertEqual(result,2)
 
+    # invalid username case
     def test_bad_username_to_level(self):
         sv4 = summoner_v4()
         result = sv4.username_to_level(";;;;;;;;")
         self.assertEqual(result,-1)
-
 
     def test_username_to_profileIconId(self):
         sv4 = summoner_v4()
@@ -42,6 +43,7 @@ class Test_summoner_v4(unittest.TestCase):
 
         self.assertEqual(result,20)
 
+    # invalid username case
     def test_bad_username_to_profileIconId(self):
         sv4 = summoner_v4()
         result = sv4.username_to_profileIconId(";;;;;;;;")
