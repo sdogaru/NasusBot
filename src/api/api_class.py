@@ -1,18 +1,24 @@
 import requests
+import os
+from dotenv import load_dotenv
+import sys
+
+load_dotenv()
+API_KEY = os.getenv('API_KEY')
 """
    Template class for all the different api classes
    defines a request handler for api requests, and encapsulates
    API Key and base url for riot api
 """
-class API:
-    def __init__(self,api_key):
-        self.api_key = api_key
+class Api:
+    def __init__(self):
+        self.api_key = API_KEY
         self.base_url = "https://na1.api.riotgames.com/lol/"
 
     """Riot API request handler to be used by all subclasses in their calls"""
-    def make_request(url):
+    def make_request(self,url):
         try:
-            response = requests.get(URL)
+            response = requests.get(url)
             if response.status_code != 200:
                 raise Exception()
 
@@ -22,3 +28,7 @@ class API:
             sys.exit(1)
 
         return response.json()
+
+
+    def rate_limit_check():
+        return None
