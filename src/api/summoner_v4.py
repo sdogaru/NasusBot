@@ -62,3 +62,14 @@ class summoner_v4(Api):
             return -1
         else:
             return result['profileIconId']
+
+    def username_to_puuid(self,username):
+        url_username = urllib.parse.quote(username)
+        URL = self.base_url +self.endpoint_url+ "by-name/"+ url_username + "?api_key=" + self.api_key
+
+        #GET request to api endpoint
+        result = self.make_api_request(URL)
+        if result == -1:
+            return -1
+        else:
+            return result['puuid']

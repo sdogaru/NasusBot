@@ -64,5 +64,13 @@ class Test_summoner_v4(unittest.TestCase):
         self.assertEqual(result,-1)
 
 
+    def test_username_to_puuid(self):
+        sv4 = summoner_v4()
+        result = sv4.username_to_puuid("Šeby")
+        if result == -1:
+            assert False, "Response code != 200"
+
+        self.assertEqual(result,"e3eRV-PsBh0hTqsW5cedfsR1qyJpXKaoGwqD_uM9jAlov2z9s8JZFUSbCRkDaYmLucARCzIicIB0gA")
+
 if __name__ == '__main__':
     unittest.main()
