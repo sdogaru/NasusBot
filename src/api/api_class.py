@@ -15,7 +15,7 @@ class Api:
     base_url = "https://na1.api.riotgames.com/lol/"
 
     """Riot API request handler to be used by all subclasses in their calls"""
-    def make_request(self,url):
+    def make_api_request(self,url):
         try:
             response = requests.get(url)
             if response.status_code != 200:
@@ -23,8 +23,7 @@ class Api:
 
         #request fail case
         except Exception:
-            print("Unsuccessful API Call: Status Code " + str(response.status_code))
-            sys.exit(1)
+            return -1
 
         return response.json()
 
