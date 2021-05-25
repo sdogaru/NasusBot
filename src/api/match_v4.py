@@ -13,7 +13,7 @@ class match_v4(Api):
     MatchReferenceDtos, or matches played, can be filtered by parameters such as
     champion, queue, and time periods.
 
-    Sample MatchListDto/MatchReferenceDTO: https://gist.github.com/mfro/f670ea56af1910a6afec
+    Documentation for MatchListDto/ MatchReferenceDto: https://developer.riotgames.com/apis#match-v4/GET_getMatchlist
     """
     def get_match_list(self,encryptedaccountID,championId=None,queue=None,beginIndex=None,endIndex=None):
         url_accountId = urllib.parse.quote(encryptedaccountID)
@@ -28,6 +28,20 @@ class match_v4(Api):
             URL += "endIndex=" + str(endIndex) + "&"
 
         URL += "api_key=" + self.api_key
+
+        result = self.make_api_request(URL)
+        if result == -1:
+            return -1
+        else:
+            return result
+
+    """
+    Returns data for a specified match (matchId) in a MatchDto
+    MatchDto has hundreds of fields (in game stats, k/da, gold, items, ward score, participants...etc)
+    that are specified at : https://developer.riotgames.com/apis#match-v4/GET_getMatch
+    """
+    def get_match(self,matchId):
+        URL = self.base_url + self.endpoint_url + "/matches/" + matchId
 
         result = self.make_api_request(URL)
         if result == -1:
