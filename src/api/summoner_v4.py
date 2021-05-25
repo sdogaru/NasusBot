@@ -6,7 +6,7 @@ Class that extends the api template, implements methods to access user account
 data like level, profile pic, and encryptedaccountID from the summoner_v4
 riotgames api
 """
-class summoner_v4(Api):
+class Summoner_v4(Api):
     def __init__(self):
         self.endpoint_url = "summoner/v4/summoners/"
 

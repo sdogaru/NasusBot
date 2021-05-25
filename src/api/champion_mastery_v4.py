@@ -5,7 +5,7 @@ import urllib
 Class that extends the api template, implements methods to access
 champion mastery data from the champion_mastery_v4 riotgames api
 """
-class champion_mastery_v4(Api):
+class Champion_mastery_v4(Api):
     def __init__(self):
         self.endpoint_url = "champion-mastery/v4/"
 

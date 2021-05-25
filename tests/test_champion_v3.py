@@ -2,11 +2,11 @@ import sys
 sys.path.append('../')
 
 import unittest
-from src.api.champion_v3 import champion_v3
+from src.api.champion_v3 import Champion_v3
 
 class Test_champion_v3(unittest.TestCase):
     def test_get_free_champion_uds(self):
-        cv3 = champion_v3()
+        cv3 = Champion_v3()
         result = cv3.get_free_champion_ids()
 
         if result == -1:
