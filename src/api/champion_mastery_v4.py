@@ -11,11 +11,10 @@ class champion_mastery_v4(Api):
 
 
     """
-    Returns array of dictionaries containing champion mastery data,
-    for each of the encryptedSummonerID's champions. Entries are returned in order of
-    mastery-points on that champion.
+    Returns array of ChampionMasteryDto dictionaries containing champion mastery data,
+    for each of the encryptedSummonerID's champions.
 
-    Sample Return Value:
+    Sample Return Value (ChampionMasteryDto):
     [{
     "championId": 99,
     "championLevel": 7,
@@ -42,7 +41,7 @@ class champion_mastery_v4(Api):
     Returns dictionary containing summoner's champion mastery data for specified
     championId
 
-    Sample Return Value:
+    Sample Return Value (ChampionMasteryDto):
     {
     "championId": 99,
     "championLevel": 7,
