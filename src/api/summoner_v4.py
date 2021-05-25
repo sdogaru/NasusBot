@@ -63,6 +63,8 @@ class summoner_v4(Api):
         else:
             return result['profileIconId']
 
+    """Given a players username, return profile puuid (for use with matchv5 api)
+    """
     def username_to_puuid(self,username):
         url_username = urllib.parse.quote(username)
         URL = self.base_url +self.endpoint_url+ "by-name/"+ url_username + "?api_key=" + self.api_key

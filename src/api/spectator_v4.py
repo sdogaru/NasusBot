@@ -14,7 +14,9 @@ class spectator_v4(Api):
     currently in a game, returns a CurrentGameInfo dictionary
 
     CurrentGameInfo dictionary contains gameId, type, duration, and players
-    participating, along with other fields listed in Riot games documentation.
+    participating, along with MANY other fields listed in Riot games documentation.
+
+    Sample CurrentGameInfo object: https://gist.github.com/mfro/f670ea56af1910a6afec
     """
     def get_active_game(self,encryptedSummonerID):
         url_summonerId = urllib.parse.quote(encryptedSummonerID)
