@@ -3,8 +3,11 @@ import os
 from dotenv import load_dotenv
 import sys
 
+# use .env file to load secret api key 
 load_dotenv()
 API_KEY = os.getenv('API_KEY')
+
+
 """
    Template class for all the different api classes
    defines a request handler for api requests, and encapsulates
