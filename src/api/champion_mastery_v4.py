@@ -31,11 +31,7 @@ class Champion_mastery_v4(Api):
         url_summonerId = urllib.parse.quote(encryptedSummonerID)
         URL = self.base_url +self.endpoint_url+ "champion-masteries/by-summoner/"+ url_summonerId + "?api_key=" + self.api_key
 
-        result = self.make_api_request(URL)
-        if result == -1:
-            return -1
-        else:
-            return result
+        return self.make_api_request(URL)
 
     """
     Returns dictionary containing summoner's champion mastery data for specified
@@ -58,11 +54,7 @@ class Champion_mastery_v4(Api):
         url_summonerId = urllib.parse.quote(encryptedSummonerID)
         URL = self.base_url +self.endpoint_url+ "champion-masteries/by-summoner/"+ url_summonerId +"/by-champion/"+str(championId) +"?api_key=" + self.api_key
 
-        result = self.make_api_request(URL)
-        if result == -1:
-            return -1
-        else:
-            return result
+        return self.make_api_request(URL)
 
     """
     Returns integer of summoner's total mastery score, summed across all champions
@@ -71,8 +63,4 @@ class Champion_mastery_v4(Api):
         url_summonerId = urllib.parse.quote(encryptedSummonerID)
         URL = self.base_url +self.endpoint_url+ "scores/by-summoner/"+ url_summonerId +"?api_key=" + self.api_key
 
-        result = self.make_api_request(URL)
-        if result == -1:
-            return -1
-        else:
-            return result
+        return self.make_api_request(URL)

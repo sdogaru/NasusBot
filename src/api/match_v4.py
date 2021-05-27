@@ -1,7 +1,7 @@
 from .api_class import Api
 import urllib
 
-class match_v4(Api):
+class Match_v4(Api):
     def __init__(self):
         self.endpoint_url = "match/v4/"
 
@@ -41,7 +41,7 @@ class match_v4(Api):
     that are specified at : https://developer.riotgames.com/apis#match-v4/GET_getMatch
     """
     def get_match(self,matchId):
-        URL = self.base_url + self.endpoint_url + "/matches/" + matchId
+        URL = self.base_url + self.endpoint_url + "matches/" + str(matchId) +"?api_key=" + self.api_key
 
         result = self.make_api_request(URL)
         if result == -1:

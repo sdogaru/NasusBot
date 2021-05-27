@@ -22,8 +22,4 @@ class spectator_v4(Api):
         url_summonerId = urllib.parse.quote(encryptedSummonerID)
         URL = self.base_url +self.endpoint_url+ "active-games/by-summoner/"+ url_summonerId + "?api_key=" + self.api_key
 
-        result = self.make_api_request(URL)
-        if result == -1:
-            return -1
-        else:
-            return result
+        return self.make_api_request(URL)
