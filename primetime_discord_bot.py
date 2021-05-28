@@ -1,6 +1,13 @@
 import discord
+import os
+from dotenv import load_dotenv
+from discord_slash import SlashCommand
+from discord_slash.utils.manage_commands import create_option
 
-client = discord.Client()
+intents = discord.Intents(messages=True, guilds=True)
+client = discord.Client(intents=intents)
+slash = SlashCommand(client, sync_commands=True) # Declares slash commands through the client.
+
 enabled = True
 
 """
@@ -24,4 +31,28 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-client.run("NzIyNzE2MzE3MTYwODMzMTE0.XunIIg.UxLdWCd8y73veXvZUHo9v0sve48")
+
+guild_ids = [722714561136033804]
+
+"""
+/rank [username]
+- returns rank, lp, and winrate for username
+"""
+@slash.slash(name="rank",
+             description="View a summoner's soloq rank, lp, and winrate.",
+             options=[
+               create_option(
+                 name="username",
+                 description="Summoner Name",
+                 option_type=3,
+                 required=True
+               )
+             ], guild_ids=guild_ids)
+async def test(ctx,username: str):
+    await ctx.send(f"Checking " + username, hidden=True)
+
+
+
+load_dotenv()
+BOT_TOKEN = os.getenv('BOT_TOKEN')
+client.run(BOT_TOKEN)

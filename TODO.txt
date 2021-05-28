@@ -1,23 +1,19 @@
 https://baronbot.github.io/
 
-main driver in root directory:
+oauth2 add to server link:
+https://discord.com/api/oauth2/authorize?client_id=722716317160833114&permissions=2148005952&scope=bot%20applications.commands
+
+main driver in root directory (primetime_discord_bot.py):
+- read https://realpython.com/how-to-make-a-discord-bot-python/
 - contain one reference to API for each section
 - used for processing/method for every command for discord bot.
 
-apis:
-- each one inherits from the api class, and represents a section of the riot api. Essentially a wrapper, no data processing asides from what exactly is returned from the json
-- TODO: 
---- match: get matchlists, get match by matchid
---- league: get lp, rank, other info
-, league, 
+data_dragon.py
+- define functions for mapping champion id-> name, icon pngs, etc.
+- https://developer.riotgames.com/docs/lol#data-dragon
 
-Add tests for each api request. Hardcode usernames, champions etc.
 
 incorporate ratelimit support. easiest way is probably to incorporate it into the api make request method, so it automatically is supported by all subclasses.
-
-case statement for command implementation in discord bot
-
-utility file for all the datadragon stuff
 
 maybe nosql db to store matches and other info. bring # of requests down 
 
@@ -28,6 +24,7 @@ list of commands
 !disable
 !enable
 --------------------------------------------------------------
+
 !mastery [username] [optional: champion]
 - display a formatted discord message regarding masteries returned by https://developer.riotgames.com/apis#champion-mastery-v4
 
@@ -37,12 +34,25 @@ list of commands
 !duo [user1] [champion1] [user2] [champion2]
 
 !wr [username] [optional:champion]
-- return user winrate w or w/o champion 
+- return user winrate (can specify by champion) 
 
-!ranked [username] 
+!rank [username] 
 - return rank, winrate, lp for username
 
-!free 
+!flexrank [username]
+- return flex rank, wr,lp,etc for username
+
+!freechamps 
 - return free champion rotation
 
+!currentgame [username]
+- live game info if available
+
+!championstats [username] [champion]
+- cs, kda, w/r 
+
+!championinfo [champion]
+- formated message containing champion description, abilities etc. using https://developer.riotgames.com/docs/lol#data-dragon
+
+unsure of these, but could be fun (!bestchamp,!bestrole, ...)
 
