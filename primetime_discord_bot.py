@@ -83,14 +83,15 @@ async def rank(ctx,username: str):
             wins = str(leagueEntryDTOs[0]['wins'])
             losses = str(leagueEntryDTOs[0]['losses'])
             # message_string = ""+username+"\n"+tier+" " +rank + "\nLP: "+lp +"\nWinrate: " + winrate + "% ("+total_games+" games played)"
-            embedVar = discord.Embed(title=username, color=0x9932CC)
-            embedVar.add_field(name="Rank", value=tier+" "+rank+" "+lp +" LP", inline=False)
+            file = discord.File("images/"+tier+".png",filename=tier+".png")
+            embedVar = discord.Embed(color=0x9932CC)
+            embedVar.set_thumbnail(url="attachment://"+tier+".png")
+            embedVar.set_author(name=username,icon_url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/profileicon/"+str(profileIconId)+".png")
+            embedVar.add_field(name="Solo/Duo Rank", value=tier+" "+rank+" "+lp +" LP", inline=False)
             embedVar.add_field(name="Winrate", value=winrate+"% ("+wins+"W  "+losses+ "L)",inline=False)
-
-            # display users profile picture in embed message
-            embedVar.set_thumbnail(url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/profileicon/"+str(profileIconId)+".png")
-
-            await ctx.send(embed=embedVar,hidden=True)
+            # display users rank in embed message
+            #embedVar.set_thumbnail(url="https://img.rankedboost.com/wp-content/uploads/2014/09/Season_2019_-_Challenger_1.png")
+            await ctx.send(file=file,embed=embedVar)
 
 
 @slash.slash(name="flexrank",
@@ -108,7 +109,7 @@ async def flexrank(ctx,username: str):
     profileIconId = sv4.username_to_profileIconId(username)
     # check for successful GET on encryptedSummonerID
     if encryptedSummonerID == -1:
-        await ctx.send(f"The username "+username+" could not be found.",hidden=True)
+        await ctx.send(f"The username "+username+" could not be found.",hidden=True,file=file)
         return
     else:
 
@@ -132,13 +133,16 @@ async def flexrank(ctx,username: str):
             wins = str(leagueEntryDTOs[0]['wins'])
             losses = str(leagueEntryDTOs[0]['losses'])
             # message_string = ""+username+"\n"+tier+" " +rank + "\nLP: "+lp +"\nWinrate: " + winrate + "% ("+total_games+" games played)"
-            embedVar = discord.Embed(title=username, color=0x9932CC)
-            embedVar.add_field(name="Rank", value=tier+" "+rank+" "+lp +" LP", inline=False)
+            file = discord.File("images/"+tier+".png",filename=tier+".png")
+            embedVar = discord.Embed(color=0x9932CC)
+            embedVar.set_thumbnail(url="attachment://"+tier+".png")
+            embedVar.set_author(name=username,icon_url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/profileicon/"+str(profileIconId)+".png")
+            embedVar.add_field(name="5x5 Flex Rank", value=tier+" "+rank+" "+lp +" LP", inline=False)
             embedVar.add_field(name="Winrate", value=winrate+"% ("+wins+"W  "+losses+ "L)",inline=False)
-            # display users profile picture in embed message
-            embedVar.set_thumbnail(url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/profileicon/"+str(profileIconId)+".png")
+            # display users rank in embed message
+            #embedVar.set_thumbnail(url="https://img.rankedboost.com/wp-content/uploads/2014/09/Season_2019_-_Challenger_1.png")
+            await ctx.send(file=file,embed=embedVar)
 
-            await ctx.send(embed=embedVar,hidden=True)
 
 
 load_dotenv()

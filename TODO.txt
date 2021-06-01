@@ -23,6 +23,7 @@ list of commands
 /help
 /commands
 --------------------------------------------------------------
+/bestchamps [username]
 
 /mastery [username] [optional: champion]
 - display a formatted discord message regarding masteries returned by https://developer.riotgames.com/apis#champion-mastery-v4
@@ -34,9 +35,6 @@ list of commands
 
 /wr [username] [optional:champion]
 - return user winrate (can specify by champion) 
-
-/rank [username] 
-- return rank, winrate, lp for username
 
 /flexrank [username]
 - return flex rank, wr,lp,etc for username
@@ -57,7 +55,13 @@ unsure of these, but could be fun (!bestchamp,!bestrole, ...)
 
 --------------------------------------------------------------
 DONE:
+
+hidden messages dont support local(non URL) thumbnail images. Might need to host them. Use a dictionary to map tier to url.
+
 /rank [username] 
 - get username's rank,lp and winrate
+
+/flexrank [username]
+- return 5x5 flex rank, wr,lp,etc for username
 
 
