@@ -4,11 +4,17 @@ from dotenv import load_dotenv
 from discord_slash import SlashCommand
 from discord_slash.utils.manage_commands import create_option
 
+from src.api.summoner_v4 import Summoner_v4
+from src.api.league_v4 import League_v4
+
 intents = discord.Intents(messages=True, guilds=True)
 client = discord.Client(intents=intents)
 slash = SlashCommand(client, sync_commands=True) # Declares slash commands through the client.
 
 enabled = True
+
+sv4 = Summoner_v4()
+lv4 = League_v4()
 
 """
 When the bot is added to a server, send a gif in chat to introduce
@@ -48,9 +54,91 @@ guild_ids = [722714561136033804]
                  required=True
                )
              ], guild_ids=guild_ids)
-async def test(ctx,username: str):
-    await ctx.send(f"Checking " + username, hidden=True)
+async def rank(ctx,username: str):
+    encryptedSummonerID = sv4.username_to_encryptedSummonerID(username)
+    profileIconId = sv4.username_to_profileIconId(username)
+    # check for successful GET on encryptedSummonerID
+    if encryptedSummonerID == -1 or profileIconId == -1:
+        await ctx.send(f"The username "+username+" could not be found.",hidden=True)
+        return
+    else:
 
+        # check for successful request for league entries
+        leagueEntryDTOs = lv4.get_ranked_leagues(encryptedSummonerID)
+        if leagueEntryDTOs == -1:
+            await ctx.send(f"Error accessing Riot Games API. Please try again later.",hidden=True)
+            return
+
+        # filter on soloqueue
+        leagueEntryDTOs = [i for i in leagueEntryDTOs if i['queueType'] == "RANKED_SOLO_5x5"]
+        if len(leagueEntryDTOs) == 0:
+            await ctx.send(f""+username+" is not ranked in soloqueue for the current season.",hidden=True)
+            return
+        else:
+            # get data from dto and format into discord message
+            tier = leagueEntryDTOs[0]['tier']
+            rank = leagueEntryDTOs[0]['rank']
+            lp = str(leagueEntryDTOs[0]['leaguePoints'])
+            winrate = str(100 * leagueEntryDTOs[0]['wins']/(leagueEntryDTOs[0]['losses']+leagueEntryDTOs[0]['wins']))[:5]
+            wins = str(leagueEntryDTOs[0]['wins'])
+            losses = str(leagueEntryDTOs[0]['losses'])
+            # message_string = ""+username+"\n"+tier+" " +rank + "\nLP: "+lp +"\nWinrate: " + winrate + "% ("+total_games+" games played)"
+            embedVar = discord.Embed(title=username, color=0x9932CC)
+            embedVar.add_field(name="Rank", value=tier+" "+rank+" "+lp +" LP", inline=False)
+            embedVar.add_field(name="Winrate", value=winrate+"% ("+wins+"W  "+losses+ "L)",inline=False)
+
+            # display users profile picture in embed message
+            embedVar.set_thumbnail(url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/profileicon/"+str(profileIconId)+".png")
+
+            await ctx.send(embed=embedVar,hidden=True)
+
+
+@slash.slash(name="flexrank",
+             description="View a summoner's flex 5v5 rank, lp, and winrate.",
+             options=[
+               create_option(
+                 name="username",
+                 description="Summoner Name",
+                 option_type=3,
+                 required=True
+               )
+             ], guild_ids=guild_ids)
+async def flexrank(ctx,username: str):
+    encryptedSummonerID = sv4.username_to_encryptedSummonerID(username)
+    profileIconId = sv4.username_to_profileIconId(username)
+    # check for successful GET on encryptedSummonerID
+    if encryptedSummonerID == -1:
+        await ctx.send(f"The username "+username+" could not be found.",hidden=True)
+        return
+    else:
+
+        # check for successful request for league entries
+        leagueEntryDTOs = lv4.get_ranked_leagues(encryptedSummonerID)
+        if leagueEntryDTOs == -1:
+            await ctx.send(f"Error accessing Riot Games API. Please try again later.",hidden=True)
+            return
+
+        # filter on flex queue
+        leagueEntryDTOs = [i for i in leagueEntryDTOs if i['queueType'] == "RANKED_FLEX_SR"]
+        if len(leagueEntryDTOs) == 0:
+            await ctx.send(f""+username+" is not ranked in 5x5 flex for the current season.",hidden=True)
+            return
+        else:
+            # get data from dto and format into discord message
+            tier = leagueEntryDTOs[0]['tier']
+            rank = leagueEntryDTOs[0]['rank']
+            lp = str(leagueEntryDTOs[0]['leaguePoints'])
+            winrate = str(100 * leagueEntryDTOs[0]['wins']/(leagueEntryDTOs[0]['losses']+leagueEntryDTOs[0]['wins']))[:5]
+            wins = str(leagueEntryDTOs[0]['wins'])
+            losses = str(leagueEntryDTOs[0]['losses'])
+            # message_string = ""+username+"\n"+tier+" " +rank + "\nLP: "+lp +"\nWinrate: " + winrate + "% ("+total_games+" games played)"
+            embedVar = discord.Embed(title=username, color=0x9932CC)
+            embedVar.add_field(name="Rank", value=tier+" "+rank+" "+lp +" LP", inline=False)
+            embedVar.add_field(name="Winrate", value=winrate+"% ("+wins+"W  "+losses+ "L)",inline=False)
+            # display users profile picture in embed message
+            embedVar.set_thumbnail(url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/profileicon/"+str(profileIconId)+".png")
+
+            await ctx.send(embed=embedVar,hidden=True)
 
 
 load_dotenv()
