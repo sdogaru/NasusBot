@@ -6,6 +6,10 @@ from discord_slash.utils.manage_commands import create_option
 
 from src.api.summoner_v4 import Summoner_v4
 from src.api.league_v4 import League_v4
+from src.api.champion_v3 import Champion_v3
+from src.api.spectator_v4 import Spectator_v4
+
+from data_dragon import CHAMPION_ID_TO_NAME
 
 intents = discord.Intents(messages=True, guilds=True)
 client = discord.Client(intents=intents)
@@ -15,6 +19,8 @@ enabled = True
 
 sv4 = Summoner_v4()
 lv4 = League_v4()
+cv4 = Champion_v3()
+spv4 = Spectator_v4()
 
 """
 When the bot is added to a server, send a gif in chat to introduce
@@ -59,20 +65,20 @@ async def rank(ctx,username: str):
     profileIconId = sv4.username_to_profileIconId(username)
     # check for successful GET on encryptedSummonerID
     if encryptedSummonerID == -1 or profileIconId == -1:
-        await ctx.send(f"The username "+username+" could not be found.",hidden=True)
+        await ctx.send(f"The username "+username+" could not be found.")
         return
     else:
 
         # check for successful request for league entries
         leagueEntryDTOs = lv4.get_ranked_leagues(encryptedSummonerID)
         if leagueEntryDTOs == -1:
-            await ctx.send(f"Error accessing Riot Games API. Please try again later.",hidden=True)
+            await ctx.send(f"Error accessing Riot Games API. Please try again later.")
             return
 
         # filter on soloqueue
         leagueEntryDTOs = [i for i in leagueEntryDTOs if i['queueType'] == "RANKED_SOLO_5x5"]
         if len(leagueEntryDTOs) == 0:
-            await ctx.send(f""+username+" is not ranked in soloqueue for the current season.",hidden=True)
+            await ctx.send(f""+username+" is not ranked in soloqueue for the current season.")
             return
         else:
             # get data from dto and format into discord message
@@ -116,13 +122,13 @@ async def flexrank(ctx,username: str):
         # check for successful request for league entries
         leagueEntryDTOs = lv4.get_ranked_leagues(encryptedSummonerID)
         if leagueEntryDTOs == -1:
-            await ctx.send(f"Error accessing Riot Games API. Please try again later.",hidden=True)
+            await ctx.send(f"Error accessing Riot Games API. Please try again later.")
             return
 
         # filter on flex queue
         leagueEntryDTOs = [i for i in leagueEntryDTOs if i['queueType'] == "RANKED_FLEX_SR"]
         if len(leagueEntryDTOs) == 0:
-            await ctx.send(f""+username+" is not ranked in 5x5 flex for the current season.",hidden=True)
+            await ctx.send(f""+username+" is not ranked in 5x5 flex for the current season.")
             return
         else:
             # get data from dto and format into discord message
@@ -143,6 +149,35 @@ async def flexrank(ctx,username: str):
             #embedVar.set_thumbnail(url="https://img.rankedboost.com/wp-content/uploads/2014/09/Season_2019_-_Challenger_1.png")
             await ctx.send(file=file,embed=embedVar)
 
+@slash.slash(name="freechamps",
+             description="Get a list of free champions for this week.",
+             guild_ids=guild_ids)
+async def freechamps(ctx):
+    free_champions = cv4.get_free_champion_ids()
+    if free_champions == -1:
+        await ctx.send(f"Error accessing Riot Games API. Please try again later.")
+        return
+
+    embedVar = discord.Embed(color=0x9932CC)
+    champion_list = [CHAMPION_ID_TO_NAME[i] +'\n'for i in free_champions]
+    embedVar.add_field(name="Current Free Champions:",value="".join(champion_list))
+    await ctx.send(embed=embedVar)
+
+@slash.slash(name="livegame",
+             description="Get live game data (if available) for the specified user.",
+             options=[
+               create_option(
+                 name="username",
+                 description="Summoner Name",
+                 option_type=3,
+                 required=True
+               )],
+             guild_ids=guild_ids)
+async def livegame(ctx, username:str):
+    CurrentGameInfo = spv4.get_active_game(username)
+    if CurrentGameInfo == -1:
+        await ctx.send(f""+username+" is not currently in a game.")
+        return
 
 
 load_dotenv()

@@ -23,27 +23,25 @@ list of commands
 /help
 /commands
 --------------------------------------------------------------
-/bestchamps [username]
+Easy:
+
+Medium:
+
+/livegame [username]
+- live game info if available
 
 /mastery [username] [optional: champion]
 - display a formatted discord message regarding masteries returned by https://developer.riotgames.com/apis#champion-mastery-v4
 
+/wr [username] [optional:champion]
+- return user winrate (can specify by champion) 
+
+Hard:
 /duo [user1] [user2]
 - return duo w/r for two players over last ? games
 
 /duo [user1] [champion1] [user2] [champion2]
 
-/wr [username] [optional:champion]
-- return user winrate (can specify by champion) 
-
-/flexrank [username]
-- return flex rank, wr,lp,etc for username
-
-/freechamps 
-- return free champion rotation
-
-/currentgame [username]
-- live game info if available
 
 /championstats [username] [champion]
 - cs, kda, w/r 
@@ -52,7 +50,9 @@ list of commands
 - formated message containing champion description, abilities etc. using https://developer.riotgames.com/docs/lol#data-dragon
 
 unsure of these, but could be fun (!bestchamp,!bestrole, ...)
+/bestchamps [username]
 
+/bestrole [username]
 --------------------------------------------------------------
 DONE:
 
@@ -64,4 +64,6 @@ hidden messages dont support local(non URL) thumbnail images. Might need to host
 /flexrank [username]
 - return 5x5 flex rank, wr,lp,etc for username
 
+/freechamps 
+- return free champion rotation
 

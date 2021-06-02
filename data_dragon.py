@@ -18,8 +18,5 @@ CHAMPION_NAME_TO_ID = {v: k for k, v in CHAMPION_ID_TO_NAME.items()}
 #list of champion names
 CHAMPION_LIST = list(CHAMPION_NAME_TO_ID.keys())
 
-print(CHAMPION_ID_TO_NAME
 
-
-"""PNG stuff"""
 """http://ddragon.leagueoflegends.com/cdn/6.8.1/img/champion/Aatrox.png"""
