@@ -8,8 +8,12 @@ from src.api.summoner_v4 import Summoner_v4
 from src.api.league_v4 import League_v4
 from src.api.champion_v3 import Champion_v3
 from src.api.spectator_v4 import Spectator_v4
+from src.api.match_v4 import Match_v4
 
 from data_dragon import CHAMPION_ID_TO_NAME
+from data_dragon import QUEUE_ID_TO_NAME
+from data_dragon import MAP_ID_TO_NAME
+from data_dragon import BLUE_TEAM_ID,RED_TEAM_ID
 
 intents = discord.Intents(messages=True, guilds=True)
 client = discord.Client(intents=intents)
@@ -21,6 +25,7 @@ sv4 = Summoner_v4()
 lv4 = League_v4()
 cv4 = Champion_v3()
 spv4 = Spectator_v4()
+mv4 = Match_v4()
 
 """
 When the bot is added to a server, send a gif in chat to introduce
@@ -163,6 +168,8 @@ async def freechamps(ctx):
     embedVar.add_field(name="Current Free Champions:",value="".join(champion_list))
     await ctx.send(embed=embedVar)
 
+
+
 @slash.slash(name="livegame",
              description="Get live game data (if available) for the specified user.",
              options=[
@@ -171,13 +178,76 @@ async def freechamps(ctx):
                  description="Summoner Name",
                  option_type=3,
                  required=True
-               )],
-             guild_ids=guild_ids)
+               )],guild_ids=guild_ids)
 async def livegame(ctx, username:str):
-    CurrentGameInfo = spv4.get_active_game(username)
-    if CurrentGameInfo == -1:
+    CurrentGameInfo = spv4.get_active_game(sv4.username_to_encryptedSummonerID(username))
+    profileIconId = sv4.username_to_profileIconId(username)
+    if CurrentGameInfo == -1 or profileIconId == -1:
         await ctx.send(f""+username+" is not currently in a game.")
         return
+
+    # title is map, game mode and time elapsed
+    embedVar = discord.Embed(color=0x9932CC,title=MAP_ID_TO_NAME[CurrentGameInfo['mapId']]+" | "+QUEUE_ID_TO_NAME[CurrentGameInfo['gameQueueConfigId']]+' | '+ format_seconds(CurrentGameInfo['gameLength']))
+
+    # get users profile pic and display
+    embedVar.set_author(name=username,icon_url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/profileicon/"+str(profileIconId)+".png")
+    participants = CurrentGameInfo['participants']
+
+    # display members of blue and red teams by position and champion
+    blue_team_users = [i['summonerId'] for i in participants if i['teamId'] == BLUE_TEAM_ID]
+    blue_team_ranks = {}
+    for i in blue_team_users:
+        leagueEntryDTOs = lv4.get_ranked_leagues(i)
+        if leagueEntryDTOs == -1:
+            await ctx.send(f"Error accessing Riot Games API. Please try again later.")
+            return
+        else:
+            # filter on gamequeue
+            rank_str = ""
+            if QUEUE_ID_TO_NAME[CurrentGameInfo['gameQueueConfigId']] == "5v5 Ranked Solo games":
+                rank_str = [i['tier']+" "+i['rank'] for i in leagueEntryDTOs if i['queueType'] == "RANKED_SOLO_5x5"][0]
+            else:
+                rank_str = [i['tier']+" "+i['rank'] for i in leagueEntryDTOs if i['queueType'] == "RANKED_FLEX_SR"][0]
+            blue_team_ranks[i] = rank_str
+
+    red_team_users = [i['summonerId'] for i in participants if i['teamId'] == RED_TEAM_ID]
+    red_team_ranks = {}
+    for i in red_team_users:
+        leagueEntryDTOs = lv4.get_ranked_leagues(i)
+        if leagueEntryDTOs == -1:
+            await ctx.send(f"Error accessing Riot Games API. Please try again later.")
+            return
+        else:
+            # filter on gamequeue
+            rank_str = ""
+            if QUEUE_ID_TO_NAME[CurrentGameInfo['gameQueueConfigId']] == "5v5 Ranked Solo games":
+                rank_str = [i['tier']+" "+i['rank'] for i in leagueEntryDTOs if i['queueType'] == "RANKED_SOLO_5x5"][0]
+            else:
+                rank_str = [i['tier']+" "+i['rank'] for i in leagueEntryDTOs if i['queueType'] == "RANKED_FLEX_SR"][0]
+            red_team_ranks[i] = rank_str
+
+
+
+    embedVar.add_field(name="Username",value="".join([i['summonerName']+'\n' for i in participants if i['teamId']==BLUE_TEAM_ID]),inline=True)
+    embedVar.add_field(name="Champion",value="".join([CHAMPION_ID_TO_NAME[i['championId']]+'\n' for i in participants if i['teamId']==BLUE_TEAM_ID]),inline=True)
+    embedVar.add_field(name="Rank",value="".join([blue_team_ranks[i['summonerId']] +'\n' for i in participants if i['teamId']==BLUE_TEAM_ID]),inline=True)
+    #embedVar.add_field(name="Red Team",value="".join(red_team_str),inline=False)
+    embedVar.add_field(name="Username",value="".join([i['summonerName']+'\n' for i in participants if i['teamId']==RED_TEAM_ID]),inline=True)
+    embedVar.add_field(name="Champion",value="".join([CHAMPION_ID_TO_NAME[i['championId']]+'\n' for i in participants if i['teamId']==RED_TEAM_ID]),inline=True)
+    embedVar.add_field(name="Rank",value="".join([red_team_ranks[i['summonerId']] +'\n' for i in participants if i['teamId']==RED_TEAM_ID]),inline=True)
+
+    # display user's champion as thumbnail
+    participants = CurrentGameInfo['participants']
+    championId = [i['championId'] for i in participants if i['summonerName'].lower() == username.lower()][0]
+    embedVar.set_thumbnail(url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/champion/"+CHAMPION_ID_TO_NAME[championId]+".png")
+    await ctx.send(embed=embedVar)
+
+
+
+def format_seconds(seconds):
+    minutes = seconds // 60
+    seconds = seconds % 60
+    return "%02d:%02d" % (minutes,seconds)
 
 
 load_dotenv()

@@ -13,6 +13,7 @@ data_dragon.py
 - define functions for mapping champion id-> name, icon pngs, etc.
 - https://developer.riotgames.com/docs/lol#data-dragon
 
+make entry message into embed
 
 incorporate ratelimit support. easiest way is probably to incorporate it into the api make request method, so it automatically is supported by all subclasses.
 
@@ -25,6 +26,7 @@ list of commands
 --------------------------------------------------------------
 Easy:
 
+--------------------------------------------------------------
 Medium:
 
 /livegame [username]
@@ -35,7 +37,7 @@ Medium:
 
 /wr [username] [optional:champion]
 - return user winrate (can specify by champion) 
-
+---------------------------------------------------------------
 Hard:
 /duo [user1] [user2]
 - return duo w/r for two players over last ? games
@@ -66,4 +68,9 @@ hidden messages dont support local(non URL) thumbnail images. Might need to host
 
 /freechamps 
 - return free champion rotation
+
+
+Red Team
+POSITION | Username | Champion | Rank
+
 
