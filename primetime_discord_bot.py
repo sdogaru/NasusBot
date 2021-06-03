@@ -9,11 +9,16 @@ from src.api.league_v4 import League_v4
 from src.api.champion_v3 import Champion_v3
 from src.api.spectator_v4 import Spectator_v4
 from src.api.match_v4 import Match_v4
+from src.api.champion_mastery_v4 import Champion_mastery_v4
 
 from data_dragon import CHAMPION_ID_TO_NAME
+from data_dragon import CHAMPION_NAME_TO_ID
 from data_dragon import QUEUE_ID_TO_NAME
 from data_dragon import MAP_ID_TO_NAME
 from data_dragon import BLUE_TEAM_ID,RED_TEAM_ID
+
+
+from datetime import datetime
 
 intents = discord.Intents(messages=True, guilds=True)
 client = discord.Client(intents=intents)
@@ -21,11 +26,13 @@ slash = SlashCommand(client, sync_commands=True) # Declares slash commands throu
 
 enabled = True
 
+# classes for accessing riot games api
 sv4 = Summoner_v4()
 lv4 = League_v4()
 cv4 = Champion_v3()
 spv4 = Spectator_v4()
 mv4 = Match_v4()
+cm4 = Champion_mastery_v4()
 
 """
 When the bot is added to a server, send a gif in chat to introduce
@@ -68,6 +75,7 @@ guild_ids = [722714561136033804]
 async def rank(ctx,username: str):
     encryptedSummonerID = sv4.username_to_encryptedSummonerID(username)
     profileIconId = sv4.username_to_profileIconId(username)
+    username = sv4.username_to_username(username)
     # check for successful GET on encryptedSummonerID
     if encryptedSummonerID == -1 or profileIconId == -1:
         await ctx.send(f"The username "+username+" could not be found.")
@@ -118,6 +126,7 @@ async def rank(ctx,username: str):
 async def flexrank(ctx,username: str):
     encryptedSummonerID = sv4.username_to_encryptedSummonerID(username)
     profileIconId = sv4.username_to_profileIconId(username)
+    username = sv4.username_to_username(username)
     # check for successful GET on encryptedSummonerID
     if encryptedSummonerID == -1:
         await ctx.send(f"The username "+username+" could not be found.",hidden=True,file=file)
@@ -182,6 +191,7 @@ async def freechamps(ctx):
 async def livegame(ctx, username:str):
     CurrentGameInfo = spv4.get_active_game(sv4.username_to_encryptedSummonerID(username))
     profileIconId = sv4.username_to_profileIconId(username)
+    username = sv4.username_to_username(username)
     if CurrentGameInfo == -1 or profileIconId == -1:
         await ctx.send(f""+username+" is not currently in a game.")
         return
@@ -242,7 +252,46 @@ async def livegame(ctx, username:str):
     embedVar.set_thumbnail(url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/champion/"+CHAMPION_ID_TO_NAME[championId]+".png")
     await ctx.send(embed=embedVar)
 
+@slash.slash(name="mastery",
+             description="View a user's mastery score for the specified champion.",
+             options=[
+               create_option(name="username",description="Summoner Name",option_type=3,required=True),
+               create_option(name="champion",description="Name of the champion",option_type=3,required=True)],guild_ids=guild_ids)
+async def mastery(ctx, username:str,champion:str):
+    encryptedSummonerID = sv4.username_to_encryptedSummonerID(username)
+    profileIconId = sv4.username_to_profileIconId(username)
+    username = sv4.username_to_username(username)
+    # check for successful GET on encryptedSummonerID
+    if encryptedSummonerID == -1 or profileIconId == -1:
+        await ctx.send(f"The username "+username+" could not be found.")
+        return
 
+    #check champion input
+    if champion.lower() not in CHAMPION_NAME_TO_ID:
+        await ctx.send(f"" + champion +" is not a valid champion name.")
+        return
+
+    champion = CHAMPION_ID_TO_NAME[CHAMPION_NAME_TO_ID[champion.lower()]]
+    mastery_dto = cm4.get_individual_championHistory(encryptedSummonerID,CHAMPION_NAME_TO_ID[champion.lower()])
+    if mastery_dto == -1:
+        await ctx.send(f""+username+" has no available mastery data for "+champion)
+        return
+
+
+    embedVar = discord.Embed(color=0x9932CC)
+
+    # double dictionary lookup to ensure URL has upper/lowercasing consistent with riots api, regardless of user input
+    embedVar.set_thumbnail(url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/champion/"+champion+".png")
+    embedVar.set_author(name=username,icon_url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/profileicon/"+str(profileIconId)+".png")
+    embedVar.add_field(name=champion,value=str(mastery_dto['championPoints'])+" points",inline=False)
+
+    # convert from ms to s
+    embedVar.add_field(name="Last Played",value=str(datetime.utcfromtimestamp(mastery_dto['lastPlayTime']/1000)),inline=True)
+
+    # display png of mastery at bototm
+    file = discord.File("images/mastery-"+str(mastery_dto['championLevel'])+".png",filename="mastery-"+str(mastery_dto['championLevel'])+".png")
+    embedVar.set_image(url="attachment://mastery-"+str(mastery_dto['championLevel'])+".png")
+    await ctx.send(embed=embedVar,file=file)
 
 def format_seconds(seconds):
     minutes = seconds // 60

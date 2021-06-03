@@ -75,3 +75,16 @@ class Summoner_v4(Api):
             return -1
         else:
             return result['puuid']
+
+    """Given a players username, returns correct spelling"""
+    def username_to_username(self,username):
+        #convert string to url format and build url
+        url_username = urllib.parse.quote(username)
+        URL = self.base_url +self.endpoint_url+ "by-name/"+ url_username + "?api_key=" + self.api_key
+
+        #GET request to api endpoint
+        result = self.make_api_request(URL)
+        if result == -1:
+            return -1
+        else:
+            return result['name']

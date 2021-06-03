@@ -12,7 +12,7 @@ for i in champion_data_dicts.keys():
     CHAMPION_ID_TO_NAME[int(champ_key)] = i
 
 # Champion name:ID dictionary
-CHAMPION_NAME_TO_ID = {v: k for k, v in CHAMPION_ID_TO_NAME.items()}
+CHAMPION_NAME_TO_ID = {v.lower(): k for k, v in CHAMPION_ID_TO_NAME.items()}
 
 #list of champion names
 CHAMPION_LIST = list(CHAMPION_NAME_TO_ID.keys())
