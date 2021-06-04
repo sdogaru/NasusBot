@@ -253,7 +253,7 @@ async def livegame(ctx, username:str):
     await ctx.send(embed=embedVar)
 
 @slash.slash(name="mastery",
-             description="View a user's mastery score for the specified champion.",
+             description="View a player's mastery score for a specific champion.",
              options=[
                create_option(name="username",description="Summoner Name",option_type=3,required=True),
                create_option(name="champion",description="Name of the champion",option_type=3,required=True)],guild_ids=guild_ids)

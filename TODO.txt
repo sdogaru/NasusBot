@@ -15,6 +15,8 @@ data_dragon.py
 
 make entry message into embed
 
+consistency for user input? Like use API to get official spelling/casing of usernames and champion namesno matter what the user inputs
+
 incorporate ratelimit support. easiest way is probably to incorporate it into the api make request method, so it automatically is supported by all subclasses.
 
 maybe nosql db to store matches and other info. bring # of requests down 
@@ -28,15 +30,8 @@ Easy:
 
 --------------------------------------------------------------
 Medium:
-
-/livegame [username]
-- live game info if available
-
-/mastery [username] [optional: champion]
-- display a formatted discord message regarding masteries returned by https://developer.riotgames.com/apis#champion-mastery-v4
-
-/wr [username] [optional:champion]
-- return user winrate (can specify by champion) 
+/championinfo [champion]
+- formated message containing champion description, abilities etc. using https://developer.riotgames.com/docs/lol#data-dragon
 ---------------------------------------------------------------
 Hard:
 /duo [user1] [user2]
@@ -44,16 +39,12 @@ Hard:
 
 /duo [user1] [champion1] [user2] [champion2]
 
-
 /championstats [username] [champion]
 - cs, kda, w/r 
 
-/championinfo [champion]
-- formated message containing champion description, abilities etc. using https://developer.riotgames.com/docs/lol#data-dragon
-
 unsure of these, but could be fun (!bestchamp,!bestrole, ...)
 /bestchamps [username]
-
+- something with the champion mastery api would be easiest.....
 /bestrole [username]
 --------------------------------------------------------------
 DONE:
@@ -69,8 +60,11 @@ hidden messages dont support local(non URL) thumbnail images. Might need to host
 /freechamps 
 - return free champion rotation
 
+/livegame [username]
+- live game info if available
 
-Red Team
-POSITION | Username | Champion | Rank
+/mastery [username] [champion]
+- display a formatted discord message regarding masteries returned by https://developer.riotgames.com/apis#champion-mastery-v4
+
 
 

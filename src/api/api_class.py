@@ -2,6 +2,7 @@ import requests
 import os
 from dotenv import load_dotenv
 import sys
+import time
 
 # use .env file to load secret api key
 load_dotenv()
@@ -20,7 +21,15 @@ class Api:
     """Riot API request handler to be used by all subclasses in their calls"""
     def make_api_request(self,url):
         try:
+            # rate limit edge case
             response = requests.get(url)
+            if response.status_code == 429:
+                print("RATE LIMIT 429 error")
+                print("sleeping")
+                time.sleep(120)
+                print("awake now")
+                response = requests.get(url)
+
             if response.status_code != 200:
                 print(response.status_code)
                 raise Exception()
