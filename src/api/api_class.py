@@ -23,16 +23,17 @@ class Api:
         try:
             # rate limit edge case
             response = requests.get(url)
+
+            # if 504, try again
+            if response.status_code == 504:
+                print("504, trying again here.")
+                response = requests.get(url)
+
             if response.status_code == 429:
                 print("RATE LIMIT 429 error")
                 print("sleeping")
                 time.sleep(120)
                 print("awake now")
-                response = requests.get(url)
-
-            # if 504, try again
-            if response.status_code == 504:
-                print("504, trying again here.")
                 response = requests.get(url)
 
             if response.status_code != 200:

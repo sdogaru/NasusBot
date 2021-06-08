@@ -69,6 +69,7 @@ async def on_message(message):
 
 guild_ids = [722714561136033804]
 
+
 """
 /rank [username]
 - returns rank, lp, and winrate for username
@@ -123,6 +124,10 @@ async def rank(ctx,username: str):
             await ctx.send(file=file,embed=embedVar)
 
 
+"""
+/flexrank [username]
+- return 5x5 flex rank, wr,lp,etc for username
+"""
 @slash.slash(name="flexrank",
              description="View a summoner's flex 5v5 rank, lp, and winrate.",
              options=[
@@ -172,6 +177,10 @@ async def flexrank(ctx,username: str):
             #embedVar.set_thumbnail(url="https://img.rankedboost.com/wp-content/uploads/2014/09/Season_2019_-_Challenger_1.png")
             await ctx.send(file=file,embed=embedVar)
 
+"""
+/freechamps
+- return free champion rotation
+"""
 @slash.slash(name="freechamps",
              description="Get a list of free champions for this week.",
              guild_ids=guild_ids)
@@ -187,7 +196,10 @@ async def freechamps(ctx):
     await ctx.send(embed=embedVar)
 
 
-
+"""
+/livegame [username]
+- live game info if available
+"""
 @slash.slash(name="livegame",
              description="Get live game data (if available) for the specified user.",
              options=[
@@ -260,6 +272,11 @@ async def livegame(ctx, username:str):
     embedVar.set_thumbnail(url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/champion/"+CHAMPION_ID_TO_NAME[championId]+".png")
     await ctx.send(embed=embedVar)
 
+
+"""
+/mastery [username] [champion]
+- display a formatted discord message regarding masteries returned by https://developer.riotgames.com/apis#champion-mastery-v4
+"""
 @slash.slash(name="mastery",
              description="View a player's mastery score for a specific champion.",
              options=[
@@ -301,6 +318,11 @@ async def mastery(ctx, username:str,champion:str):
     embedVar.set_image(url="attachment://mastery-"+str(mastery_dto['championLevel'])+".png")
     await ctx.send(embed=embedVar,file=file)
 
+
+"""
+/championstats [username] [champion] [queue]
+- cs, kda, w/r etc. on a specific champion, in a selected game queue
+"""
 @slash.slash(name="championstats",
              description="View a user's KD/A, win rate, damage and other stats on a specific champion.",
              options=[
@@ -375,15 +397,19 @@ async def championstats(ctx,username:str,champion:str,queueId:int):
     embedVar.add_field(name='CS/min',value="{:.2f}".format(df['CS/min'][0]),inline=True)
     embedVar.add_field(name='Gold Earned',value="{:.2f}".format(df['goldEarned'][0]),inline=True)
 
-    embedVar.add_field(name='Champion Damage ',value="{:.2f}".format(df['totalDamageDealtToChampions'][0]),inline=True)
+    embedVar.add_field(name='Damage Dealt',value="{:.2f}".format(df['totalDamageDealtToChampions'][0]),inline=True)
     embedVar.add_field(name='Damage Taken',value="{:.2f}".format(df['totalDamageTaken'][0]),inline=True)
     embedVar.add_field(name='First Blood %',value="{:.2f}".format(df['firstBlood'][0] * 100),inline=True)
-
 
     await message.edit(content="",embed=embedVar)
 
 
+"""
+Helper method that retrieved matches played from the database, and gets
+new matches from the riot games api when necessary.
 
+Returns a dataframe, where each row is a user's stats from a specific match.
+"""
 def get_matches_from_db(encryptedAccountID,champion,username,queueId=0):
     # Generate unix timestamp for 01/01/Current Year (LoL season start apprx.)
     year = datetime.date.today().year
@@ -491,6 +517,8 @@ def get_matches_from_db(encryptedAccountID,champion,username,queueId=0):
     if queueId != 0:
         df = df[df['queueId']==queueId]
     return df
+
+
 
 def format_seconds(seconds):
     minutes = seconds // 60
