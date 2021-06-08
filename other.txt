@@ -1,0 +1,54 @@
+Advanced Statistics Pathway:
+
+need a ratelimiting mechanism
+
+getMatchList Use champion identifier + queueID(use preset values. either ranked,flex,norms,draft,all)
+(IDs 420,440,430,440,None)
+
+and iterate on 100 game intervals using indexing until the year changes.
+display Season + Year in embed. So like Season 2021
+
+
+--> Each call returns a list of matchListDTos, which have queueID, champion,lane,season and gameID
+----> For each entry, we use getMatch api and retrieve statistics
+
+store the entire match object, NOT this
+
+ 
+
+{
+	accountId,
+	gameId,
+	queueId,
+	champion,
+	lane,
+	timestamp,
+	cs,
+	cs/min,
+	kills,
+	deaths,
+	assists,
+	gold,
+	damageToChampions,
+	damageToObjectives,
+	damageTaken,
+	win
+}
+
+QUESTIONS:
+REFACTOR CODE AND ADD DB
+
+- transition to matchv5 api once they open to production keys.
+noget match list dto in matchv5 :( so some code change will be necessary.
+
+duo champion parameter too?
+
+batch store matches in db
+
+then, for additional requests, we always use the getMatchList as we iterate, but check the db for the gameId before* using getMatch.
+
+handle bad input for /stats . empty usernames, etc
+- banned user
+- empty user
+- duo same username as main
+- etc

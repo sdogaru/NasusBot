@@ -3,15 +3,7 @@ https://baronbot.github.io/
 oauth2 add to server link:
 https://discord.com/api/oauth2/authorize?client_id=722716317160833114&permissions=2148005952&scope=bot%20applications.commands
 
-main driver in root directory (primetime_discord_bot.py):
-- read https://realpython.com/how-to-make-a-discord-bot-python/
-- contain one reference to API for each section
-- used for processing/method for every command for discord bot.
-- make messaged embedded
-
-data_dragon.py
-- define functions for mapping champion id-> name, icon pngs, etc.
-- https://developer.riotgames.com/docs/lol#data-dragon
+-change from primetime to ahri everywhere
 
 make entry message into embed
 
@@ -22,9 +14,6 @@ incorporate ratelimit support. easiest way is probably to incorporate it into th
 maybe nosql db to store matches and other info. bring # of requests down 
 
 -------------------------------------------------------------
-list of commands
-/help
-/commands
 --------------------------------------------------------------
 Easy:
 
@@ -34,18 +23,33 @@ Medium:
 - formated message containing champion description, abilities etc. using https://developer.riotgames.com/docs/lol#data-dragon
 ---------------------------------------------------------------
 Hard:
-/duo [user1] [user2]
-- return duo w/r for two players over last ? games
+/duo [user1] [user2] [queue]
+- return duo w/r for two players for current season
+- list top 3 champion/role pairings and winrates
+- list mostplayed pairing(s) and winrate:
 
-/duo [user1] [champion1] [user2] [champion2]
+/duochamps [user1] [champion1] [user2] [champion2] [queue]
+- return duo w/r for two players on specific champions
 
-/championstats [username] [champion]
+/duorole [user1] [role1] [user2] [role2] [queue]
+- how to prevent role1 and role2 from being same?
+
+/botlaneduo [user1] [user2]
+
+------------------------------------------------------------------------
+
+/championstats [username] [champion] [queue]
 - cs, kda, w/r 
 
 unsure of these, but could be fun (!bestchamp,!bestrole, ...)
+
 /bestchamps [username]
 - something with the champion mastery api would be easiest.....
+
 /bestrole [username]
+
+/lastgame [username]
+- returned W/L, mode, time , champion, KDA, gold for last game played
 --------------------------------------------------------------
 DONE:
 
