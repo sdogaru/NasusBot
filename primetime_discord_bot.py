@@ -50,10 +50,10 @@ When the bot is added to a server, send a gif in chat to introduce
 """
 @client.event
 async def on_guild_join(guild):
-    general = discord.utils.find(lambda x: x.name == 'general',  guild.text_channels)
-    if general:
-        await general.send(file=discord.File('ahri_gif.gif'))
-        await general.send("Hi, I'm Ahri - a Discord bot for all things League of Legends! To get started, use the /help command.")
+    #general = discord.utils.find(lambda x: x.name == 'general',  guild.text_channels)
+    if len(guild.text_channels) > 1: #general:
+        await guild.text_channels[0].send(file=discord.File('ahri_gif.gif'))
+        await guild.text_channels[0].send("Hi, I'm Ahri - a Discord bot for all things League of Legends! To get started, type /")
 
 @client.event
 async def on_ready():
@@ -342,7 +342,12 @@ async def championstats(ctx,username:str,champion:str,queueId:int):
         return
 
     champion = CHAMPION_ID_TO_NAME[CHAMPION_NAME_TO_ID[champion.lower()]]
-    await ctx.send("Retrieving new match data! This could take a minute.")
+
+
+    embed = discord.Embed(color=0x9932CC,title="Fetching newest data...")
+    embed.set_image(url="https://media.tenor.com/images/2629d421692a139c37b6c43492219a45/tenor.gif")
+
+    message = await ctx.send(embed=embed)
     rdf = get_matches_from_db(encryptedAccountID,champion,username,queueId)
     df = rdf.groupby(['championName']).mean()
 
@@ -375,7 +380,7 @@ async def championstats(ctx,username:str,champion:str,queueId:int):
     embedVar.add_field(name='First Blood %',value="{:.2f}".format(df['firstBlood'][0] * 100),inline=True)
 
 
-    await ctx.send(embed=embedVar)
+    await message.edit(content="",embed=embedVar)
 
 
 

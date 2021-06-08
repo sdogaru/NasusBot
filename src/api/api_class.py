@@ -30,6 +30,11 @@ class Api:
                 print("awake now")
                 response = requests.get(url)
 
+            # if 504, try again
+            if response.status_code == 504:
+                print("504, trying again here.")
+                response = requests.get(url)
+
             if response.status_code != 200:
                 print(response.status_code)
                 raise Exception()
