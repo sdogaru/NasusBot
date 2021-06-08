@@ -371,6 +371,10 @@ async def championstats(ctx,username:str,champion:str,queueId:int):
 
     message = await ctx.send(embed=embed)
     rdf = get_matches_from_db(encryptedAccountID,champion,username,queueId)
+    # apply filters at the bitter end!
+    rdf = rdf[rdf['championName'] == champion]
+    if queueId != 0:
+        rdf = rdf[rdf['queueId']==queueId]
     df = rdf.groupby(['championName']).mean()
 
     queueName = None
@@ -512,10 +516,7 @@ def get_matches_from_db(encryptedAccountID,champion,username,queueId=0):
     if len(objects)>0:
         db.matches.insert_many(objects)
 
-    # apply filters at the bitter end!
-    df = pd.DataFrame(list(db.matches.find({'accountId':accountId,'championId':championId})))
-    if queueId != 0:
-        df = df[df['queueId']==queueId]
+    df = pd.DataFrame(list(db.matches.find({'accountId':accountId})))
     return df
 
 
