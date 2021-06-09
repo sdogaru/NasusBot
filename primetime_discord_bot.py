@@ -370,7 +370,7 @@ async def championstats(ctx,username:str,champion:str,queueId:int):
     embed.set_image(url="https://media.tenor.com/images/2629d421692a139c37b6c43492219a45/tenor.gif")
 
     message = await ctx.send(embed=embed)
-    rdf = get_matches_from_db(encryptedAccountID,champion,username,queueId)
+    rdf = get_matches_from_db(encryptedAccountID)
     # apply filters at the bitter end!
     rdf = rdf[rdf['championName'] == champion]
     if queueId != 0:
@@ -414,14 +414,11 @@ new matches from the riot games api when necessary.
 
 Returns a dataframe, where each row is a user's stats from a specific match.
 """
-def get_matches_from_db(encryptedAccountID,champion,username,queueId=0):
+def get_matches_from_db(encryptedAccountID):
     # Generate unix timestamp for 01/01/Current Year (LoL season start apprx.)
     year = datetime.date.today().year
     date = datetime.datetime(year, 1, 1)
     NEW_YEAR_TIME_STAMP = date.timestamp()
-
-    # if user provided champion parameters, convert string to numeric id
-    championId = CHAMPION_NAME_TO_ID[champion.lower()]
 
     # request accountId and check for valid response
     accountId = encryptedAccountID
@@ -432,7 +429,7 @@ def get_matches_from_db(encryptedAccountID,champion,username,queueId=0):
 
     # find timestamp for most recent game stored in db. Only request riot api for
     # games that occured after this timestamp
-    mostRecentGame =  db.matches.find({'accountId':encryptedAccountID}).sort("timestamp",-1)
+    mostRecentGame =  db.matches.find({'accountId':accountId}).sort("timestamp",-1)
     mostRecentTimestamp = None
     if db.matches.count_documents({'accountId':accountId}) != 0:
         mostRecentTimestamp = mostRecentGame[0]['timestamp']
@@ -531,6 +528,27 @@ def kda(kills,deaths,assists):
         return 'Perfect K/DA'
     else:
         return "{:.2f}".format((kills+assists)/deaths)
+
+"""
+{
+    (MID_LANE, SOLO): MIDDLE,
+    (TOP_LANE, SOLO): TOP,
+    (JUNGLE, NONE): JUNGLE,
+    (BOT_LANE, DUO_CARRY): BOTTOM,
+    (BOT_LANE, DUO_SUPPORT): UTILITY
+}
+"""
+def lane(lane,role):
+    if lane == "MIDDLE":
+        return "MID"
+    if lane == "TOP":
+        return lane
+    if lane == "JUNGLE":
+        return lane
+    if lane =="BOTTOM" and role=="DUO_CARRY":
+        return "ADC"
+    else:
+        return "SUPPORT"
 
 load_dotenv()
 BOT_TOKEN = os.getenv('BOT_TOKEN')
