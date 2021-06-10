@@ -357,7 +357,7 @@ async def mastery(ctx, username:str,champion:str):
     embedVar.add_field(name=champion,value=str(mastery_dto['championPoints'])+" points",inline=False)
 
     # convert from ms to s
-    embedVar.add_field(name="Last Played",value=str(datetime.utcfromtimestamp(mastery_dto['lastPlayTime']/1000)),inline=True)
+    embedVar.add_field(name="Last Played",value=str(datetime.datetime.utcfromtimestamp(mastery_dto['lastPlayTime']/1000)),inline=True)
 
     # display png of mastery at bototm
     file = discord.File("images/mastery-"+str(mastery_dto['championLevel'])+".png",filename="mastery-"+str(mastery_dto['championLevel'])+".png")
@@ -420,12 +420,7 @@ async def championstats(ctx,username:str,champion:str,queueId:int):
     if len(rdf) == 0:
         error_embed = discord.Embed(color=0x9932CC,title=f"" + "Could not find current season match data for "+username)
         await message.edit(content="",embed=error_embed)
-
-    # apply filters at the bitter end!
-    rdf = rdf[rdf['championName'] == champion]
-    if len(rdf) == 0:
-        error_embed = discord.Embed(color=0x9932CC,title=f"" + "Could not find current season match data for "+username+"on "+champion)
-        await message.edit(content="",embed=error_embed)
+        return
 
     if queueId != 0:
         rdf = rdf[rdf['queueId']==queueId]
@@ -441,6 +436,14 @@ async def championstats(ctx,username:str,champion:str,queueId:int):
         error_embed = discord.Embed(color=0x9932CC,title=f""+username+" has not played any "+queueName+" this season.")
         await message.edit(content="",embed=error_embed)
         return
+
+    # apply filters at the bitter end!
+    rdf = rdf[rdf['championName'] == champion]
+    if len(rdf) == 0:
+        error_embed = discord.Embed(color=0x9932CC,title=f"" + "Could not find current season match data for "+username+" on "+champion)
+        await message.edit(content="",embed=error_embed)
+        return
+
 
     df = rdf.groupby(['championName']).mean()
 

@@ -13,6 +13,9 @@ for i in champion_data_dicts.keys():
 
 # Champion name:ID dictionary
 CHAMPION_NAME_TO_ID = {v.lower(): k for k, v in CHAMPION_ID_TO_NAME.items()}
+misspelled = [('aurelionsol','aurelion sol'),('jarvaniv','jarvan iv'),('leesin','lee sin'),('monkeyking','wukong'),('masteryi','master yi'),('missfortune','miss fortune'),('tahmkench','tahm kench'),('twistedfate','twisted fate'),('xinzhao','xin zhao')]
+for i in misspelled:
+    CHAMPION_NAME_TO_ID[i[1]] = CHAMPION_NAME_TO_ID[i[0]]
 
 #list of champion names
 CHAMPION_LIST = list(CHAMPION_NAME_TO_ID.keys())
