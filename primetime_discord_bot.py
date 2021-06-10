@@ -17,7 +17,7 @@ from data_dragon import QUEUE_ID_TO_NAME
 from data_dragon import QUEUE_NAME_TO_ID
 from data_dragon import MAP_ID_TO_NAME
 from data_dragon import BLUE_TEAM_ID,RED_TEAM_ID
-from data_dragon import get_champion_tips
+from data_dragon import get_champion_json
 
 
 import datetime
@@ -221,7 +221,7 @@ async def tips(ctx,champion:str):
     champion = CHAMPION_ID_TO_NAME[CHAMPION_NAME_TO_ID[champion.lower()]]
 
     # get tips from static datadragon that riot provides
-    tips = get_champion_tips(champion)
+    tips = get_champion_json(champion)
     if tips == -1:
         await ctx.send(f"Error retrieving champion tips from Riot Games. Try again later.")
         return
@@ -241,6 +241,98 @@ async def tips(ctx,champion:str):
     embedVar.add_field(name="Tips for playing against "+champion,value=enemytips,inline=False)
 
     await ctx.send(embed=embedVar)
+
+"""
+/championinfo
+- get a champion's description/ list of abilities
+"""
+@slash.slash(name="championinfo",
+             description="View a champion's abilities.",
+             options=[
+                create_option(
+                name="champion",
+                description="champion name",
+                option_type=3,
+                required=True
+                )
+             ],
+             guild_ids=guild_ids)
+async def championinfo(ctx,champion:str):
+    # check that champion input is valid
+    if champion.lower() not in CHAMPION_NAME_TO_ID:
+        await ctx.send(f"" + champion +" is not a valid champion name.")
+        return
+
+    champion = CHAMPION_ID_TO_NAME[CHAMPION_NAME_TO_ID[champion.lower()]]
+
+    # get tips from static datadragon that riot provides
+    championInfo = get_champion_json(champion)
+    if championInfo == -1:
+        await ctx.send(f"Error retrieving champion info from Riot Games. Try again later.")
+        return
+
+    title = championInfo['data'][champion]['title']
+    passive_name = championInfo['data'][champion]['passive']['name']
+    passive_description = championInfo['data'][champion]['passive']['description']
+    q_name = championInfo['data'][champion]['spells'][0]['name']
+    q_description = championInfo['data'][champion]['spells'][0]['description']
+    w_name = championInfo['data'][champion]['spells'][1]['name']
+    w_description = championInfo['data'][champion]['spells'][1]['description']
+    e_name = championInfo['data'][champion]['spells'][2]['name']
+    e_description = championInfo['data'][champion]['spells'][2]['description']
+    r_name = championInfo['data'][champion]['spells'][3]['name']
+    r_description = championInfo['data'][champion]['spells'][3]['description']
+    # lore = championInfo['data'][champion]['lore']
+
+    embedVar = discord.Embed(color=0x9932CC,title=champion+', '+title)
+    embedVar.set_thumbnail(url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/champion/"+champion+".png")
+    embedVar.add_field(name='Passive - ' + passive_name,value=passive_description,inline=False)
+    embedVar.add_field(name='Q - '+q_name,value=q_description,inline=False)
+    embedVar.add_field(name='W - '+w_name,value=w_description,inline=False)
+    embedVar.add_field(name='E - '+e_name,value=e_description,inline=False)
+    embedVar.add_field(name='R - '+r_name,value=r_description+'\n\n',inline=False)
+    # embedVar.add_field(name='Lore',value=lore,inline=False)
+
+    await ctx.send(embed=embedVar)
+
+"""
+/championlore
+- get lore description
+"""
+@slash.slash(name="championlore",
+             description="View a champion's lore.",
+             options=[
+                create_option(
+                name="champion",
+                description="champion name",
+                option_type=3,
+                required=True
+                )
+             ],
+             guild_ids=guild_ids)
+async def championlore(ctx,champion:str):
+    # check that champion input is valid
+    if champion.lower() not in CHAMPION_NAME_TO_ID:
+        await ctx.send(f"" + champion +" is not a valid champion name.")
+        return
+
+    champion = CHAMPION_ID_TO_NAME[CHAMPION_NAME_TO_ID[champion.lower()]]
+
+    # get tips from static datadragon that riot provides
+    championInfo = get_champion_json(champion)
+    if championInfo == -1:
+        await ctx.send(f"Error retrieving champion info from Riot Games. Try again later.")
+        return
+
+    title = championInfo['data'][champion]['title']
+    lore = championInfo['data'][champion]['lore']
+
+    embedVar = discord.Embed(color=0x9932CC,title=champion+', '+title)
+    embedVar.set_thumbnail(url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/champion/"+champion+".png")
+    embedVar.add_field(name='Lore',value=lore+'\n\n'+"To learn more about "+champion+', '+title+", visit the Riot Games Universe [website](https://universe.leagueoflegends.com/en_US/story/champion/"+champion+"/).",inline=False)
+
+    await ctx.send(embed=embedVar)
+
 
 """
 /livegame [username]
