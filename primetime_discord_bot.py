@@ -17,12 +17,14 @@ from data_dragon import QUEUE_ID_TO_NAME
 from data_dragon import QUEUE_NAME_TO_ID
 from data_dragon import MAP_ID_TO_NAME
 from data_dragon import BLUE_TEAM_ID,RED_TEAM_ID
+from data_dragon import get_champion_tips
 
 
 import datetime
 import pandas as pd
 import numpy
 import time
+import requests
 
 # MongoDB Atlas
 import pymongo
@@ -195,6 +197,50 @@ async def freechamps(ctx):
     embedVar.add_field(name="Current Free Champions:",value="".join(champion_list))
     await ctx.send(embed=embedVar)
 
+"""
+/tips [champion]
+- Get tips for playing with and against a champion
+"""
+@slash.slash(name="tips",
+             description="Get tips for playing with and against a champion.",
+             options=[
+                create_option(
+                name="champion",
+                description="champion name",
+                option_type=3,
+                required=True
+                )
+             ],
+             guild_ids=guild_ids)
+async def tips(ctx,champion:str):
+    # check that champion input is valid
+    if champion.lower() not in CHAMPION_NAME_TO_ID:
+        await ctx.send(f"" + champion +" is not a valid champion name.")
+        return
+
+    champion = CHAMPION_ID_TO_NAME[CHAMPION_NAME_TO_ID[champion.lower()]]
+
+    # get tips from static datadragon that riot provides
+    tips = get_champion_tips(champion)
+    if tips == -1:
+        await ctx.send(f"Error retrieving champion tips from Riot Games. Try again later.")
+        return
+
+    embedVar = discord.Embed(color=0x9932CC)
+    embedVar.set_thumbnail(url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/champion/"+champion+".png")
+    allytips = "".join([" -- "+i+'\n\n' for i in tips['data'][champion]['allytips']])
+    enemytips = "".join([" -- "+i+'\n\n' for i in tips['data'][champion]['enemytips']])
+
+    # some of the new champions dont have published tips yet.
+    if len(allytips) == 0 or len(enemytips) == 0:
+        await ctx.send(f"Riot games has not published tips for "+champion+" yet.")
+        return
+
+    embedVar.add_field(name="Tips for playing "+champion,value=allytips,inline=False)
+    embedVar.add_field(name="\u200b",value="\u200b",inline=False)
+    embedVar.add_field(name="Tips for playing against "+champion,value=enemytips,inline=False)
+
+    await ctx.send(embed=embedVar)
 
 """
 /livegame [username]

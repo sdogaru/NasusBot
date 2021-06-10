@@ -29,3 +29,12 @@ QUEUE_NAME_TO_ID = {v:k for k,v in QUEUE_ID_TO_NAME.items()}
 
 BLUE_TEAM_ID = 100
 RED_TEAM_ID = 200
+
+def get_champion_tips(champion):
+    # get tips from static datadragon that riot provides
+    r = requests.get('http://ddragon.leagueoflegends.com/cdn/11.12.1/data/en_US/champion/'+champion+'.json')
+    if r.status_code != 200:
+        print(r.status_code)
+        return -1
+
+    return r.json()
