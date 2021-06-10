@@ -371,17 +371,34 @@ async def championstats(ctx,username:str,champion:str,queueId:int):
 
     message = await ctx.send(embed=embed)
     rdf = get_matches_from_db(encryptedAccountID)
+    if len(rdf) == 0:
+        error_embed = discord.Embed(color=0x9932CC,title=f"" + "Could not find current season match data for "+username)
+        await message.edit(content="",embed=error_embed)
+
     # apply filters at the bitter end!
     rdf = rdf[rdf['championName'] == champion]
+    if len(rdf) == 0:
+        error_embed = discord.Embed(color=0x9932CC,title=f"" + "Could not find current season match data for "+username+"on "+champion)
+        await message.edit(content="",embed=error_embed)
+
     if queueId != 0:
         rdf = rdf[rdf['queueId']==queueId]
-    df = rdf.groupby(['championName']).mean()
 
     queueName = None
     if queueId != 0:
         queueName = QUEUE_ID_TO_NAME[queueId]
     else:
         queueName = "All queues"
+
+    # empty match history for queue case
+    if len(rdf) == 0:
+        error_embed = discord.Embed(color=0x9932CC,title=f""+username+" has not played any "+queueName+" this season.")
+        await message.edit(content="",embed=error_embed)
+        return
+
+    df = rdf.groupby(['championName']).mean()
+
+
 
     embedVar = discord.Embed(color=0x9932CC,title=queueName+" stats on "+champion)
     # double dictionary lookup to ensure URL has upper/lowercasing consistent with riots api, regardless of user input
@@ -408,6 +425,136 @@ async def championstats(ctx,username:str,champion:str,queueId:int):
     await message.edit(content="",embed=embedVar)
 
 
+@slash.slash(name="duostats",
+             description="View a duo's w/r, games played, and their most common champion pairings and stats.",
+             options=[
+               create_option(name="username1",description="Summoner Name",option_type=3,required=True),
+               create_option(name="username2",description="Summoner Name",option_type=3,required=True),
+               create_option(name="queue",description="Summoner's rift queue type",option_type=4,required=True, choices=[
+                  create_choice(
+                    name="5v5 Ranked Solo",
+                    value=QUEUE_NAME_TO_ID["5v5 Ranked Solo games"]
+                  ),
+                  create_choice(
+                    name="5v5 Ranked Flex",
+                    value=QUEUE_NAME_TO_ID["5v5 Ranked Flex games"]
+                  ),
+                  create_choice(
+                    name="5v5 Blind Pick",
+                    value=QUEUE_NAME_TO_ID["5v5 Blind Pick games"]
+                  ),
+                  create_choice(
+                    name="5v5 Draft Pick",
+                    value=QUEUE_NAME_TO_ID["5v5 Draft Pick games"]
+                  ),
+                  create_choice(
+                    name="All queues",
+                    value=0
+                  )
+                ])
+               ],guild_ids=guild_ids)
+async def duostats(ctx,username1:str,username2:str,queueId:int):
+    encryptedAccountID = sv4.username_to_encryptedAccountID(username1)
+    profileIconId = sv4.username_to_profileIconId(username1)
+
+    # check if username1 is valid input
+    if encryptedAccountID == -1 or profileIconId == -1:
+        await ctx.send(f"The username "+username1+" could not be found.")
+        return
+    username = sv4.username_to_username(username1)
+
+    #check if username2 is valid input
+    duo_encryptedAccountID = sv4.username_to_encryptedAccountID(username2)
+    if duo_encryptedAccountID == -1:
+        await ctx.send(f"The username "+username2+" could not be found.")
+        return
+    duo_username = sv4.username_to_username(username2)
+
+    # convert queueId into readable string
+    queueName = None
+    if queueId != 0:
+        queueName = QUEUE_ID_TO_NAME[queueId]
+    else:
+        queueName = "All queues"
+
+    # send loading message gif into channel while data is fetched
+    embed = discord.Embed(color=0x9932CC,title="Fetching duo match data...")
+    embed.set_image(url="https://media.tenor.com/images/2629d421692a139c37b6c43492219a45/tenor.gif")
+    message = await ctx.send(embed=embed)
+
+    # get match history for both users, then inner join on common games
+    df1 = get_matches_from_db(encryptedAccountID)
+    df2 = get_matches_from_db(duo_encryptedAccountID)
+
+    # no match history edge case
+    if len(df1) == 0:
+        error_embed = discord.Embed(color=0x9932CC,title=f"Could not retrieve match history for "+username1)
+        await message.edit(content="",embed=error_embed)
+        return
+
+    # no match history edge case
+    if len(df2) == 0:
+        error_embed = discord.Embed(color=0x9932CC,title=f"Could not retrieve match history for "+username2)
+        await message.edit(content="",embed=error_embed)
+        return
+
+    # inner join
+    duo_df = df1.join(df2.set_index('gameId'),on='gameId',how="inner",rsuffix="_duo")
+
+    # if a queueId is specified, filter on that queue
+    if queueId != 0:
+        duo_df = duo_df[duo_df['queueId'] == queueId]
+    # case where the users never played together
+    if len(duo_df) == 0:
+        error_embed = discord.Embed(color=0x9932CC,title=f""+username1+" has not played any "+queueName+" with "+username2+" this season.")
+        await message.edit(content="",embed=error_embed)
+        return
+
+
+    embedVar = discord.Embed(color=0x9932CC,title=queueName+" Duo Statistics with "+username2)
+    embedVar.set_author(name=username,icon_url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/profileicon/"+str(profileIconId)+".png")
+
+    # WR and total games played
+    wr = duo_df['win'].mean()
+    total_game_count = duo_df['win'].count()
+
+    embedVar.add_field(name='Total Games Played',value=str(total_game_count)+'\n ',inline=True)
+    embedVar.add_field(name='Total Winrate',value="{:.2f}".format(wr),inline=True)
+
+    # top 5 most played + WR
+    # specify Username,champion,role
+    duo_grouped = duo_df.groupby(['championName','championName_duo']).count().sort_values('win_duo',ascending=False)
+    if len(duo_grouped) > 10:
+        duo_grouped = duo_grouped[:10]
+
+    top5 =  duo_grouped.index.values
+    pair_game_counts = duo_grouped['win'].values
+
+    # compute statistics for each of the top 5 pairings and put together formatted string to display
+    idx = 0
+    user1_string = ""
+    user2_string = ""
+    wr_string = ""
+    for i,j in top5:
+        tmp = duo_df[(duo_df['championName']==i)& (duo_df['championName_duo']==j)]
+        lane1 = lane(tmp['lane'].value_counts().index[0],tmp['role'].value_counts().index[0])
+        lane2 = lane(tmp['lane_duo'].value_counts().index[0],tmp['role_duo'].value_counts().index[0])
+        total_games = str(pair_game_counts[idx]) + " games "
+        winrate = "{:.2f}".format(tmp['win'].mean() * 100) + "% winrate"
+
+        user1_string += i+' ('+lane1+')\n'
+        user2_string += j+' ('+lane2+')\n'
+        wr_string += total_games+winrate+'\n'
+        #pair_string += f"{i:<12}{'('+lane1+')':<9}{' +  '+j:<16}{'('+lane2+')':<9}{total_games+winrate:<25}" +'\n'
+        idx += 1
+
+    embedVar.add_field(name='Most Common Champion Pairings:',value='\u200b',inline=False)
+    embedVar.add_field(name=username1,value=user1_string,inline=True)
+    embedVar.add_field(name=username2,value=user2_string,inline=True)
+    embedVar.add_field(name='Games played/WR',value=wr_string,inline=True)
+    await message.edit(content="",embed=embedVar)
+# check for empty df
+
 """
 Helper method that retrieved matches played from the database, and gets
 new matches from the riot games api when necessary.
@@ -422,6 +569,7 @@ def get_matches_from_db(encryptedAccountID):
 
     # request accountId and check for valid response
     accountId = encryptedAccountID
+    username = sv4.encryptedAccountID_to_username(encryptedAccountID)
     total = 0
     beginIndex= 0
     endIndex=100
@@ -442,7 +590,7 @@ def get_matches_from_db(encryptedAccountID):
         if d == -1:
             # DISCORD MESSAGE HERE
             print("Could not retrieve match data for "+username)
-            return -1
+            return pd.DataFrame()
 
 
         #get list of matchDtos from api response d
@@ -455,7 +603,7 @@ def get_matches_from_db(encryptedAccountID):
                     loop = False
                     break
                 else:
-                    return -1
+                    return pd.DataFrame()
 
 
             # only process matches in current season (year)
