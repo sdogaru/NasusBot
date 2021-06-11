@@ -1,54 +1,54 @@
 Advanced Statistics Pathway:
-
-need a ratelimiting mechanism
-
-getMatchList Use champion identifier + queueID(use preset values. either ranked,flex,norms,draft,all)
-(IDs 420,440,430,440,None)
-
-and iterate on 100 game intervals using indexing until the year changes.
-display Season + Year in embed. So like Season 2021
-
-
---> Each call returns a list of matchListDTos, which have queueID, champion,lane,season and gameID
-----> For each entry, we use getMatch api and retrieve statistics
-
-store the entire match object, NOT this
-
- 
-
-{
-	accountId,
-	gameId,
-	queueId,
-	champion,
-	lane,
-	timestamp,
-	cs,
-	cs/min,
-	kills,
-	deaths,
-	assists,
-	gold,
-	damageToChampions,
-	damageToObjectives,
-	damageTaken,
-	win
-}
-
 QUESTIONS:
+
+- apply for rate limit increase
+
+-publish to top.gg and other bot sites
+
+- ahri entry msg is in 'general' - wb severs w/o general
+
+- need to make slash commands global
+
+- move gifs to image file
+
+- need to solve reoccuring 504 problem.
+
+- add comments and mild refactoring //maybe a flexible error handler for all the api methods where a function is passed in? idk
+
+-change from primetime to ahri (to nasus??) everywhere
+
+- make entry message into embed
+
+- add support for different regions outside of NA - take region param in front end but make changes in api backend
+
+- make embed color a global variable 
+
+- lee sin, j4, wukong, all have weird names and need a mapping
+
+- publish to top.gg and other sites
+
+
+threading for async methods so bot can support more people
+-sharding?
+
+
+
 REFACTOR CODE AND ADD DB
 
 - transition to matchv5 api once they open to production keys.
 noget match list dto in matchv5 :( so some code change will be necessary.
 
-duo champion parameter too?
 
-batch store matches in db
+in the future, can make a helper method that trims the match object to relevant data before storing in db to save space
 
-then, for additional requests, we always use the getMatchList as we iterate, but check the db for the gameId before* using getMatch.
+mongodb atlas is 512 mb (17k games). Can switch to local for unlimited space...
 
 handle bad input for /stats . empty usernames, etc
 - banned user
 - empty user
 - duo same username as main
 - etc
+
+https://www.reddit.com/r/leagueoflegends/comments/naa7ut/i_was_tired_of_spending_thousands_of_hours/
+
+can add a track command. use it to update a spreadsheet and so on

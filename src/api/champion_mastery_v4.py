@@ -27,7 +27,7 @@ class Champion_mastery_v4(Api):
     "summonerId": "JLzDAXZ89AGuYb1Std1IF_PJ5wqs1WORI4URcV6fbq7mEQY"
     }, ...]
     """
-    def get_full_championHistory(self,encryptedSummonerID):
+    def get_all_champion_mastery(self,encryptedSummonerID):
         url_summonerId = urllib.parse.quote(encryptedSummonerID)
         URL = self.base_url +self.endpoint_url+ "champion-masteries/by-summoner/"+ url_summonerId + "?api_key=" + self.api_key
 
@@ -50,7 +50,7 @@ class Champion_mastery_v4(Api):
     "summonerId": "JLzDAXZ89AGuYb1Std1IF_PJ5wqs1WORI4URcV6fbq7mEQY"
     }
     """
-    def get_individual_championHistory(self,encryptedSummonerID,championId):
+    def get_individual_champion_mastery(self,encryptedSummonerID,championId):
         url_summonerId = urllib.parse.quote(encryptedSummonerID)
         URL = self.base_url +self.endpoint_url+ "champion-masteries/by-summoner/"+ url_summonerId +"/by-champion/"+str(championId) +"?api_key=" + self.api_key
 

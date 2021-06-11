@@ -77,7 +77,7 @@ guild_ids = [722714561136033804]
 - returns rank, lp, and winrate for username
 """
 @slash.slash(name="rank",
-             description="View a summoner's soloq rank, lp, and winrate.",
+             description="View a summoner's soloq rank, lp, and ranked winrate.",
              options=[
                create_option(
                  name="username",
@@ -111,7 +111,7 @@ async def rank(ctx,username: str):
             tier = leagueEntryDTOs[0]['tier']
             rank = leagueEntryDTOs[0]['rank']
             lp = str(leagueEntryDTOs[0]['leaguePoints'])
-            winrate = str(100 * leagueEntryDTOs[0]['wins']/(leagueEntryDTOs[0]['losses']+leagueEntryDTOs[0]['wins']))[:5]
+            winrate = "{:.2f}".format(100 * leagueEntryDTOs[0]['wins']/(leagueEntryDTOs[0]['losses']+leagueEntryDTOs[0]['wins']))
             wins = str(leagueEntryDTOs[0]['wins'])
             losses = str(leagueEntryDTOs[0]['losses'])
             # message_string = ""+username+"\n"+tier+" " +rank + "\nLP: "+lp +"\nWinrate: " + winrate + "% ("+total_games+" games played)"
@@ -131,7 +131,7 @@ async def rank(ctx,username: str):
 - return 5x5 flex rank, wr,lp,etc for username
 """
 @slash.slash(name="flexrank",
-             description="View a summoner's flex 5v5 rank, lp, and winrate.",
+             description="View a summoner's flex 5v5 rank, lp, and ranked flex winrate.",
              options=[
                create_option(
                  name="username",
@@ -165,7 +165,7 @@ async def flexrank(ctx,username: str):
             tier = leagueEntryDTOs[0]['tier']
             rank = leagueEntryDTOs[0]['rank']
             lp = str(leagueEntryDTOs[0]['leaguePoints'])
-            winrate = str(100 * leagueEntryDTOs[0]['wins']/(leagueEntryDTOs[0]['losses']+leagueEntryDTOs[0]['wins']))[:5]
+            winrate = "{:.2f}".format(100 * leagueEntryDTOs[0]['wins']/(leagueEntryDTOs[0]['losses']+leagueEntryDTOs[0]['wins']))
             wins = str(leagueEntryDTOs[0]['wins'])
             losses = str(leagueEntryDTOs[0]['losses'])
             # message_string = ""+username+"\n"+tier+" " +rank + "\nLP: "+lp +"\nWinrate: " + winrate + "% ("+total_games+" games played)"
@@ -180,13 +180,13 @@ async def flexrank(ctx,username: str):
             await ctx.send(file=file,embed=embedVar)
 
 """
-/freechamps
+/free
 - return free champion rotation
 """
-@slash.slash(name="freechamps",
+@slash.slash(name="free",
              description="Get a list of free champions for this week.",
              guild_ids=guild_ids)
-async def freechamps(ctx):
+async def free(ctx):
     free_champions = cv4.get_free_champion_ids()
     if free_champions == -1:
         await ctx.send(f"Error accessing Riot Games API. Please try again later.")
@@ -243,10 +243,10 @@ async def tips(ctx,champion:str):
     await ctx.send(embed=embedVar)
 
 """
-/championinfo
+/abilities
 - get a champion's description/ list of abilities
 """
-@slash.slash(name="championinfo",
+@slash.slash(name="abilities",
              description="View a champion's abilities.",
              options=[
                 create_option(
@@ -257,7 +257,7 @@ async def tips(ctx,champion:str):
                 )
              ],
              guild_ids=guild_ids)
-async def championinfo(ctx,champion:str):
+async def abilities(ctx,champion:str):
     # check that champion input is valid
     if champion.lower() not in CHAMPION_NAME_TO_ID:
         await ctx.send(f"" + champion +" is not a valid champion name.")
@@ -296,10 +296,10 @@ async def championinfo(ctx,champion:str):
     await ctx.send(embed=embedVar)
 
 """
-/championlore
+/lore
 - get lore description
 """
-@slash.slash(name="championlore",
+@slash.slash(name="lore",
              description="View a champion's lore.",
              options=[
                 create_option(
@@ -310,7 +310,7 @@ async def championinfo(ctx,champion:str):
                 )
              ],
              guild_ids=guild_ids)
-async def championlore(ctx,champion:str):
+async def lore(ctx,champion:str):
     # check that champion input is valid
     if champion.lower() not in CHAMPION_NAME_TO_ID:
         await ctx.send(f"" + champion +" is not a valid champion name.")
@@ -435,7 +435,7 @@ async def mastery(ctx, username:str,champion:str):
         return
 
     champion = CHAMPION_ID_TO_NAME[CHAMPION_NAME_TO_ID[champion.lower()]]
-    mastery_dto = cm4.get_individual_championHistory(encryptedSummonerID,CHAMPION_NAME_TO_ID[champion.lower()])
+    mastery_dto = cm4.get_individual_champion_mastery(encryptedSummonerID,CHAMPION_NAME_TO_ID[champion.lower()])
     if mastery_dto == -1:
         await ctx.send(f""+username+" has no available mastery data for "+champion)
         return
@@ -456,6 +456,54 @@ async def mastery(ctx, username:str,champion:str):
     embedVar.set_image(url="attachment://mastery-"+str(mastery_dto['championLevel'])+".png")
     await ctx.send(embed=embedVar,file=file)
 
+"""
+/topmastery
+- View a user's top 10 champions by mastery points.
+"""
+@slash.slash(name="topmastery",
+             description="View a user's top 10 champions by mastery points.",
+             options=[
+               create_option(
+                 name="username",
+                 description="Summoner Name",
+                 option_type=3,
+                 required=True
+               )],guild_ids=guild_ids)
+async def topmastery(ctx,username:str):
+    encryptedSummonerID = sv4.username_to_encryptedSummonerID(username)
+    profileIconId = sv4.username_to_profileIconId(username)
+
+    # check for successful GET on encryptedSummonerID
+    if encryptedSummonerID == -1 or profileIconId == -1:
+        await ctx.send(f"The username "+username+" could not be found.")
+        return
+    username = sv4.username_to_username(username)
+
+    top_10 = cm4.get_all_champion_mastery(encryptedSummonerID)
+
+    if top_10 == -1 or len(top_10) == 0:
+        await ctx.send(f"Champion mastery data for "+username+" could not be retrieved.")
+        return
+
+    if len(top_10) > 10:
+        top_10 = top_10[:10]
+
+    champion_str = ""
+    point_str = ""
+    mastery_str = ""
+    for i in top_10:
+        champion_str += CHAMPION_ID_TO_NAME[i['championId']] +'\n'
+        point_str += str(i['championPoints']) + " pts\n"
+        mastery_str += 'Mastery '+str(i['championLevel'])+'\n'
+
+    embedVar = discord.Embed(color=0x9932CC,title="Top 10 Mastered Champions")
+    embedVar.set_thumbnail(url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/champion/"+CHAMPION_ID_TO_NAME[top_10[0]['championId']]+".png")
+    embedVar.set_author(name=username,icon_url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/profileicon/"+str(profileIconId)+".png")
+    embedVar.add_field(name="Champion",value=champion_str,inline=True)
+    embedVar.add_field(name="Points",value=point_str,inline=True)
+    embedVar.add_field(name="Mastery",value=mastery_str,inline=True)
+
+    await ctx.send(embed=embedVar)
 
 """
 /championstats [username] [champion] [queue]
@@ -551,7 +599,7 @@ async def championstats(ctx,username:str,champion:str,queueId:int):
     embedVar.add_field(name='Assists',value="{:.2f}".format(df['assists'][0]),inline=True)
 
     embedVar.add_field(name='K/DA',value=kda(df['kills'][0],df['deaths'][0],df['assists'][0]),inline=True)
-    embedVar.add_field(name='Winrate',value="{:.2f}".format(df['win'][0]),inline=True)
+    embedVar.add_field(name='Winrate',value="{:.2f}%".format(df['win'][0]*100),inline=True)
     numWins = sum(rdf['win'])
     embedVar.add_field(name='Games played',value=str(len(rdf)) + " ("+str(numWins)+"W "+str(len(rdf)-numWins)+"L)",inline=True)
 
@@ -668,7 +716,7 @@ async def duostats(ctx,username1:str,username2:str,queueId:int):
     if len(duo_grouped) > 10:
         duo_grouped = duo_grouped[:10]
 
-    top5 =  duo_grouped.index.values
+    top10 =  duo_grouped.index.values
     pair_game_counts = duo_grouped['win'].values
 
     # compute statistics for each of the top 5 pairings and put together formatted string to display
@@ -676,12 +724,13 @@ async def duostats(ctx,username1:str,username2:str,queueId:int):
     user1_string = ""
     user2_string = ""
     wr_string = ""
-    for i,j in top5:
+    for i,j in top10:
         tmp = duo_df[(duo_df['championName']==i)& (duo_df['championName_duo']==j)]
         lane1 = lane(tmp['lane'].value_counts().index[0],tmp['role'].value_counts().index[0])
         lane2 = lane(tmp['lane_duo'].value_counts().index[0],tmp['role_duo'].value_counts().index[0])
-        total_games = str(pair_game_counts[idx]) + " games "
-        winrate = "{:.2f}".format(tmp['win'].mean() * 100) + "% winrate"
+        numWins = sum(tmp['win'])
+        total_games = str(len(tmp)) + " ("+str(numWins)+"W "+str(len(tmp)-numWins)+"L) "
+        winrate = "{:.2f}%".format(tmp['win'].mean() * 100)
 
         user1_string += i+' ('+lane1+')\n'
         user2_string += j+' ('+lane2+')\n'
@@ -692,10 +741,109 @@ async def duostats(ctx,username1:str,username2:str,queueId:int):
     embedVar.add_field(name='Most Common Champion Pairings:',value='\u200b',inline=False)
     embedVar.add_field(name=username1,value=user1_string,inline=True)
     embedVar.add_field(name=username2,value=user2_string,inline=True)
-    embedVar.add_field(name='Games played/WR',value=wr_string,inline=True)
+    embedVar.add_field(name='Games played/Winrate',value=wr_string,inline=True)
     await message.edit(content="",embed=embedVar)
-# check for empty df
 
+"""
+/mostplayed [username] [queue]
+- View a user's top 10 most played champions + stats for a selected game queue.
+"""
+@slash.slash(name="mostplayed",
+             description="View stats for user's top 10 most played champions in a selected game queue.",
+             options=[
+               create_option(name="username",description="Summoner Name",option_type=3,required=True),
+               create_option(name="queue",description="Summoner's rift queue type",option_type=4,required=True, choices=[
+                  create_choice(
+                    name="5v5 Ranked Solo",
+                    value=QUEUE_NAME_TO_ID["5v5 Ranked Solo games"]
+                  ),
+                  create_choice(
+                    name="5v5 Ranked Flex",
+                    value=QUEUE_NAME_TO_ID["5v5 Ranked Flex games"]
+                  ),
+                  create_choice(
+                    name="5v5 Blind Pick",
+                    value=QUEUE_NAME_TO_ID["5v5 Blind Pick games"]
+                  ),
+                  create_choice(
+                    name="5v5 Draft Pick",
+                    value=QUEUE_NAME_TO_ID["5v5 Draft Pick games"]
+                  ),
+                  create_choice(
+                    name="All queues",
+                    value=0
+                  )
+                ])
+               ],guild_ids=guild_ids)
+async def mostplayed(ctx,username:str,queueId:int):
+    encryptedAccountID = sv4.username_to_encryptedAccountID(username)
+    profileIconId = sv4.username_to_profileIconId(username)
+    if encryptedAccountID == -1 or profileIconId == -1:
+        await ctx.send(f"The username "+username+" could not be found.")
+        return
+    username = sv4.username_to_username(username)
+
+
+    # display loading gif while data is processed
+    embed = discord.Embed(color=0x9932CC,title="Fetching newest data...")
+    embed.set_image(url="https://media.tenor.com/images/2629d421692a139c37b6c43492219a45/tenor.gif")
+    message = await ctx.send(embed=embed)
+
+    # get match data from database
+    df = get_matches_from_db(encryptedAccountID)
+    if len(df) == 0:
+        print('empty')
+        error_embed = discord.Embed(color=0x9932CC,title=f"" + "Could not find current season match data for "+username)
+        return
+
+    if queueId != 0:
+        df = df[df['queueId']==queueId]
+
+    queueName = None
+    if queueId != 0:
+        queueName = QUEUE_ID_TO_NAME[queueId]
+    else:
+        queueName = "All queues"
+
+    # empty match history for queue case
+    if len(df) == 0:
+        error_embed = discord.Embed(color=0x9932CC,title=f""+username+" has not played any "+queueName+" this season.")
+        await message.edit(content="",embed=error_embed)
+        return
+
+    # group by champion to find top 10 most played.
+    grouped = df.groupby(['championName']).count().sort_values('win',ascending=False)
+    if len(grouped) > 10:
+        grouped = grouped[:10]
+
+    # top 10 - champion names and respective # games played
+    top10 = grouped.index.values
+    game_counts = grouped['win'].values
+
+    # compute statistics for each of the top 10 pairings and put together formatted string to display
+    idx = 0
+    champion_str = ""
+    games_played_str = ""
+    kda_str = ""
+    for i in top10:
+        tmp = df[df['championName'] == i]
+        champion_str += i + '\n'
+        numWins = sum(tmp['win'])
+        gdf = tmp.groupby(['championName']).mean()
+        kda_str += kda(gdf['kills'][0],gdf['deaths'][0],gdf['assists'][0]) + '\n'
+        games_played_str += str(len(tmp)) + " ("+str(numWins)+"W "+str(len(tmp)-numWins)+"L) "+"{:.2f}%".format(gdf['win'][0] * 100) + '\n'
+        idx += 1
+
+    embedVar = discord.Embed(color=0x9932CC,title="Top 10 played champions in "+queueName)
+    # double dictionary lookup to ensure URL has upper/lowercasing consistent with riots api, regardless of user input
+    embedVar.set_thumbnail(url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/champion/"+top10[0]+".png")
+    embedVar.set_author(name=username,icon_url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/profileicon/"+str(profileIconId)+".png")
+
+    embedVar.add_field(name="Champion",value=champion_str,inline=True)
+    embedVar.add_field(name="K/DA",value=kda_str,inline=True)
+    embedVar.add_field(name="Games played/Winrate",value=games_played_str,inline=True)
+
+    await message.edit(content="",embed=embedVar)
 """
 Helper method that retrieved matches played from the database, and gets
 new matches from the riot games api when necessary.
