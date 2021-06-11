@@ -170,7 +170,7 @@ async def flexrank(ctx,username: str):
             losses = str(leagueEntryDTOs[0]['losses'])
             # message_string = ""+username+"\n"+tier+" " +rank + "\nLP: "+lp +"\nWinrate: " + winrate + "% ("+total_games+" games played)"
             file = discord.File("images/"+tier+".png",filename=tier+".png")
-            embedVar = discord.Embed(color=EMBED_COLOR32CC)
+            embedVar = discord.Embed(color=EMBED_COLOR)
             embedVar.set_thumbnail(url="attachment://"+tier+".png")
             embedVar.set_author(name=username,icon_url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/profileicon/"+str(profileIconId)+".png")
             embedVar.add_field(name="5x5 Flex Rank", value=tier+" "+rank+" "+lp +" LP", inline=False)
@@ -192,7 +192,7 @@ async def free(ctx):
         await ctx.send(f"Error accessing Riot Games API. Please try again later.")
         return
 
-    embedVar = discord.Embed(color=EMBED_COLOR32CC)
+    embedVar = discord.Embed(color=EMBED_COLOR)
     champion_list = [CHAMPION_ID_TO_NAME[i] +'\n'for i in free_champions]
     embedVar.add_field(name="Current Free Champions:",value="".join(champion_list))
     await ctx.send(embed=embedVar)
@@ -226,7 +226,7 @@ async def tips(ctx,champion:str):
         await ctx.send(f"Error retrieving champion tips from Riot Games. Try again later.")
         return
 
-    embedVar = discord.Embed(color=EMBED_COLOR32CC)
+    embedVar = discord.Embed(color=EMBED_COLOR)
     embedVar.set_thumbnail(url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/champion/"+champion+".png")
     allytips = "".join([" -- "+i+'\n\n' for i in tips['data'][champion]['allytips']])
     enemytips = "".join([" -- "+i+'\n\n' for i in tips['data'][champion]['enemytips']])
@@ -284,7 +284,7 @@ async def abilities(ctx,champion:str):
     r_description = championInfo['data'][champion]['spells'][3]['description']
     # lore = championInfo['data'][champion]['lore']
 
-    embedVar = discord.Embed(color=EMBED_COLOR32CC,title=champion+', '+title)
+    embedVar = discord.Embed(color=EMBED_COLOR,title=champion+', '+title)
     embedVar.set_thumbnail(url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/champion/"+champion+".png")
     embedVar.add_field(name='Passive - ' + passive_name,value=passive_description,inline=False)
     embedVar.add_field(name='Q - '+q_name,value=q_description,inline=False)
@@ -327,7 +327,7 @@ async def lore(ctx,champion:str):
     title = championInfo['data'][champion]['title']
     lore = championInfo['data'][champion]['lore']
 
-    embedVar = discord.Embed(color=EMBED_COLOR32CC,title=champion+', '+title)
+    embedVar = discord.Embed(color=EMBED_COLOR,title=champion+', '+title)
     embedVar.set_thumbnail(url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/champion/"+champion+".png")
     embedVar.add_field(name='Lore',value=lore+'\n\n'+"To learn more about "+champion+', '+title+", visit the Riot Games Universe [website](https://universe.leagueoflegends.com/en_US/story/champion/"+champion+"/).",inline=False)
 
@@ -355,7 +355,7 @@ async def livegame(ctx, username:str):
         return
     username = sv4.username_to_username(username)
     # title is map, game mode and time elapsed
-    embedVar = discord.Embed(color=EMBED_COLOR32CC,title=MAP_ID_TO_NAME[CurrentGameInfo['mapId']]+" | "+QUEUE_ID_TO_NAME[CurrentGameInfo['gameQueueConfigId']]+' | '+ format_seconds(CurrentGameInfo['gameLength']))
+    embedVar = discord.Embed(color=EMBED_COLOR,title=MAP_ID_TO_NAME[CurrentGameInfo['mapId']]+" | "+QUEUE_ID_TO_NAME[CurrentGameInfo['gameQueueConfigId']]+' | '+ format_seconds(CurrentGameInfo['gameLength']))
 
     # get users profile pic and display
     embedVar.set_author(name=username,icon_url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/profileicon/"+str(profileIconId)+".png")
@@ -441,7 +441,7 @@ async def mastery(ctx, username:str,champion:str):
         return
 
 
-    embedVar = discord.Embed(color=EMBED_COLOR32CC)
+    embedVar = discord.Embed(color=EMBED_COLOR)
 
     # double dictionary lookup to ensure URL has upper/lowercasing consistent with riots api, regardless of user input
     embedVar.set_thumbnail(url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/champion/"+champion+".png")
@@ -496,7 +496,7 @@ async def topmastery(ctx,username:str):
         point_str += str(i['championPoints']) + " pts\n"
         mastery_str += 'Mastery '+str(i['championLevel'])+'\n'
 
-    embedVar = discord.Embed(color=EMBED_COLOR32CC,title="Top 10 Mastered Champions")
+    embedVar = discord.Embed(color=EMBED_COLOR,title="Top 10 Mastered Champions")
     embedVar.set_thumbnail(url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/champion/"+CHAMPION_ID_TO_NAME[top_10[0]['championId']]+".png")
     embedVar.set_author(name=username,icon_url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/profileicon/"+str(profileIconId)+".png")
     embedVar.add_field(name="Champion",value=champion_str,inline=True)
@@ -552,13 +552,13 @@ async def championstats(ctx,username:str,champion:str,queueId:int):
     champion = CHAMPION_ID_TO_NAME[CHAMPION_NAME_TO_ID[champion.lower()]]
 
     # display loading gif while data is retrieved
-    embed = discord.Embed(color=EMBED_COLOR32CC,title="Fetching newest data...")
+    embed = discord.Embed(color=EMBED_COLOR,title="Fetching newest data...")
     embed.set_image(url="https://media.tenor.com/images/2629d421692a139c37b6c43492219a45/tenor.gif")
 
     message = await ctx.send(embed=embed)
     rdf = get_matches_from_db(encryptedAccountID)
     if len(rdf) == 0:
-        error_embed = discord.Embed(color=EMBED_COLOR32CC,title=f"" + "Could not find current season match data for "+username)
+        error_embed = discord.Embed(color=EMBED_COLOR,title=f"" + "Could not find current season match data for "+username)
         await message.edit(content="",embed=error_embed)
         return
 
@@ -569,14 +569,14 @@ async def championstats(ctx,username:str,champion:str,queueId:int):
 
     # empty match history for queue case
     if len(rdf) == 0:
-        error_embed = discord.Embed(color=EMBED_COLOR32CC,title=f""+username+" has not played any "+queueName+" this season.")
+        error_embed = discord.Embed(color=EMBED_COLOR,title=f""+username+" has not played any "+queueName+" this season.")
         await message.edit(content="",embed=error_embed)
         return
 
     # apply filters at the bitter end!
     rdf = rdf[rdf['championName'] == champion]
     if len(rdf) == 0:
-        error_embed = discord.Embed(color=EMBED_COLOR32CC,title=f"" + "Could not find current season match data for "+username+" on "+champion)
+        error_embed = discord.Embed(color=EMBED_COLOR,title=f"" + "Could not find current season match data for "+username+" on "+champion)
         await message.edit(content="",embed=error_embed)
         return
 
@@ -585,7 +585,7 @@ async def championstats(ctx,username:str,champion:str,queueId:int):
 
 
 
-    embedVar = discord.Embed(color=EMBED_COLOR32CC,title=queueName+" stats on "+champion)
+    embedVar = discord.Embed(color=EMBED_COLOR,title=queueName+" stats on "+champion)
     # double dictionary lookup to ensure URL has upper/lowercasing consistent with riots api, regardless of user input
     embedVar.set_thumbnail(url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/champion/"+champion+".png")
     embedVar.set_author(name=username,icon_url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/profileicon/"+str(profileIconId)+".png")
@@ -659,7 +659,7 @@ async def duostats(ctx,username1:str,username2:str,queueId:int):
     queueName = get_queue_name(queueId)
 
     # send loading message gif into channel while data is fetched
-    embed = discord.Embed(color=EMBED_COLOR32CC,title="Searching for duo match data...")
+    embed = discord.Embed(color=EMBED_COLOR,title="Searching for duo match data...")
     embed.set_image(url="https://media.tenor.com/images/2629d421692a139c37b6c43492219a45/tenor.gif")
     message = await ctx.send(embed=embed)
 
@@ -669,13 +669,13 @@ async def duostats(ctx,username1:str,username2:str,queueId:int):
 
     # no match history edge case
     if len(df1) == 0:
-        error_embed = discord.Embed(color=EMBED_COLOR32CC,title=f"Could not retrieve match history for "+username1)
+        error_embed = discord.Embed(color=EMBED_COLOR,title=f"Could not retrieve match history for "+username1)
         await message.edit(content="",embed=error_embed)
         return
 
     # no match history for DUO edge case
     if len(df2) == 0:
-        error_embed = discord.Embed(color=EMBED_COLOR32CC,title=f"Could not retrieve match history for "+username2)
+        error_embed = discord.Embed(color=EMBED_COLOR,title=f"Could not retrieve match history for "+username2)
         await message.edit(content="",embed=error_embed)
         return
 
@@ -687,12 +687,12 @@ async def duostats(ctx,username1:str,username2:str,queueId:int):
         duo_df = duo_df[duo_df['queueId'] == queueId]
     # case where the users never played together
     if len(duo_df) == 0:
-        error_embed = discord.Embed(color=EMBED_COLOR32CC,title=f""+username1+" has not played any "+queueName+" with "+username2+" this season.")
+        error_embed = discord.Embed(color=EMBED_COLOR,title=f""+username1+" has not played any "+queueName+" with "+username2+" this season.")
         await message.edit(content="",embed=error_embed)
         return
 
 
-    embedVar = discord.Embed(color=EMBED_COLOR32CC,title=queueName+" Duo Statistics with "+username2)
+    embedVar = discord.Embed(color=EMBED_COLOR,title=queueName+" Duo Statistics with "+username2)
     embedVar.set_author(name=username,icon_url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/profileicon/"+str(profileIconId)+".png")
 
     # WR and total games played
@@ -777,7 +777,7 @@ async def mostplayed(ctx,username:str,queueId:int):
 
 
     # display loading gif while data is processed
-    embed = discord.Embed(color=EMBED_COLOR32CC,title="Fetching newest data...")
+    embed = discord.Embed(color=EMBED_COLOR,title="Fetching newest data...")
     embed.set_image(url="https://64.media.tumblr.com/e59ffcaa310835f2b207bebcf96258d0/f75a4d609d3d34a7-ba/s640x960/397ef2eb12b0750f1dfcecce54ac41ac6299f79e.gif")
     message = await ctx.send(embed=embed)
 
@@ -785,7 +785,7 @@ async def mostplayed(ctx,username:str,queueId:int):
     df = get_matches_from_db(encryptedAccountID)
     if len(df) == 0:
         print('empty')
-        error_embed = discord.Embed(color=EMBED_COLOR32CC,title=f"" + "Could not find current season match data for "+username)
+        error_embed = discord.Embed(color=EMBED_COLOR,title=f"" + "Could not find current season match data for "+username)
         return
 
     # filter if queue is specified
@@ -795,7 +795,7 @@ async def mostplayed(ctx,username:str,queueId:int):
 
     # empty match history for queue case
     if len(df) == 0:
-        error_embed = discord.Embed(color=EMBED_COLOR32CC,title=f""+username+" has not played any "+queueName+" this season.")
+        error_embed = discord.Embed(color=EMBED_COLOR,title=f""+username+" has not played any "+queueName+" this season.")
         await message.edit(content="",embed=error_embed)
         return
 
@@ -822,7 +822,7 @@ async def mostplayed(ctx,username:str,queueId:int):
         games_played_str += str(len(tmp)) + " ("+str(numWins)+"W "+str(len(tmp)-numWins)+"L) "+"{:.2f}%".format(gdf['win'][0] * 100) + '\n'
         idx += 1
 
-    embedVar = discord.Embed(color=EMBED_COLOR32CC,title="Top 10 played champions in "+queueName)
+    embedVar = discord.Embed(color=EMBED_COLOR,title="Top 10 played champions in "+queueName)
     # double dictionary lookup to ensure URL has upper/lowercasing consistent with riots api, regardless of user input
     embedVar.set_thumbnail(url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/champion/"+top10[0]+".png")
     embedVar.set_author(name=username,icon_url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/profileicon/"+str(profileIconId)+".png")
