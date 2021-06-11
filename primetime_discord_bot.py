@@ -551,7 +551,7 @@ async def championstats(ctx,username:str,champion:str,queueId:int):
 
     champion = CHAMPION_ID_TO_NAME[CHAMPION_NAME_TO_ID[champion.lower()]]
 
-    # display loading gif while data is retrieved 
+    # display loading gif while data is retrieved
     embed = discord.Embed(color=EMBED_COLOR32CC,title="Fetching newest data...")
     embed.set_image(url="https://media.tenor.com/images/2629d421692a139c37b6c43492219a45/tenor.gif")
 
@@ -659,7 +659,7 @@ async def duostats(ctx,username1:str,username2:str,queueId:int):
     queueName = get_queue_name(queueId)
 
     # send loading message gif into channel while data is fetched
-    embed = discord.Embed(color=EMBED_COLOR32CC,title="Fetching duo match data...")
+    embed = discord.Embed(color=EMBED_COLOR32CC,title="Searching for duo match data...")
     embed.set_image(url="https://media.tenor.com/images/2629d421692a139c37b6c43492219a45/tenor.gif")
     message = await ctx.send(embed=embed)
 
@@ -778,7 +778,7 @@ async def mostplayed(ctx,username:str,queueId:int):
 
     # display loading gif while data is processed
     embed = discord.Embed(color=EMBED_COLOR32CC,title="Fetching newest data...")
-    embed.set_image(url="https://media.tenor.com/images/2629d421692a139c37b6c43492219a45/tenor.gif")
+    embed.set_image(url="https://64.media.tumblr.com/e59ffcaa310835f2b207bebcf96258d0/f75a4d609d3d34a7-ba/s640x960/397ef2eb12b0750f1dfcecce54ac41ac6299f79e.gif")
     message = await ctx.send(embed=embed)
 
     # get match data from database
