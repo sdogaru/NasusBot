@@ -285,9 +285,53 @@ async def flexrank(ctx,username: str, region:str):
 - return free champion rotation
 """
 @slash.slash(name="free",
-             description="Get a list of free champions for this week.",
+             description="Get a list of free champions for this week, on a specified server.",
+             options=[
+              create_option(name="region",description="Region-specific server free champion rotation",option_type=3,required=True,choices=[
+                 create_choice(
+                   name="NA",
+                   value="NA"
+                 ),
+                 create_choice(
+                   name="EUW",
+                   value="EUW"
+                 ),
+                 create_choice(
+                   name="EUNE",
+                   value="EUNE"
+                 ),
+                 create_choice(
+                   name="KR",
+                   value="KR"
+                 ),
+                 create_choice(
+                   name="OCE",
+                   value="OCE"
+                 ),
+                 create_choice(
+                   name="TR",
+                   value="TR"
+                 ),
+                 create_choice(
+                   name="JP",
+                   value="JP"
+                 ),
+                 create_choice(
+                   name="LAN",
+                   value="LAN"
+                 ),
+                 create_choice(
+                   name="LAS",
+                   value="LAS"
+                 ),
+                 create_choice(
+                   name="RU",
+                   value="RU"
+                 ),
+               ])],
              guild_ids=guild_ids)
-async def free(ctx):
+async def free(ctx,region:str):
+    cv4 = Champion_v3(region)
     free_champions = cv4.get_free_champion_ids()
     if free_champions == -1:
         await ctx.send(f"Error accessing Riot Games API. Please try again later.")
@@ -295,7 +339,7 @@ async def free(ctx):
 
     embedVar = discord.Embed(color=EMBED_COLOR)
     champion_list = [CHAMPION_ID_TO_NAME[i] +'\n'for i in free_champions]
-    embedVar.add_field(name="Current Free Champions:",value="".join(champion_list))
+    embedVar.add_field(name="Current Free Champions ["+region+"]",value="".join(champion_list))
     await ctx.send(embed=embedVar)
 
 """
