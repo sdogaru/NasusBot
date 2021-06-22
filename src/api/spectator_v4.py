@@ -6,7 +6,8 @@ Class that extends the api template, implements methods to access
 champion mastery data from the champion_mastery_v4 riotgames api
 """
 class Spectator_v4(Api):
-    def __init__(self):
+    def __init__(self,region):
+        super().__init__(region)
         self.endpoint_url = "spectator/v4/"
 
     """

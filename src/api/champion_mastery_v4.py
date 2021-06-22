@@ -6,11 +6,11 @@ Class that extends the api template, implements methods to access
 champion mastery data from the champion_mastery_v4 riotgames api
 """
 class Champion_mastery_v4(Api):
-    def __init__(self):
+    def __init__(self,region):
+        super().__init__(region)
         self.endpoint_url = "champion-mastery/v4/"
 
-
-    """
+        """
     Returns array of ChampionMasteryDto dictionaries containing champion mastery data,
     for each of the encryptedSummonerID's champions.
 
@@ -33,7 +33,7 @@ class Champion_mastery_v4(Api):
 
         return self.make_api_request(URL)
 
-    """
+        """
     Returns dictionary containing summoner's champion mastery data for specified
     championId
 
@@ -53,7 +53,6 @@ class Champion_mastery_v4(Api):
     def get_individual_champion_mastery(self,encryptedSummonerID,championId):
         url_summonerId = urllib.parse.quote(encryptedSummonerID)
         URL = self.base_url +self.endpoint_url+ "champion-masteries/by-summoner/"+ url_summonerId +"/by-champion/"+str(championId) +"?api_key=" + self.api_key
-
         return self.make_api_request(URL)
 
     """

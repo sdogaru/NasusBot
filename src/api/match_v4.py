@@ -2,7 +2,8 @@ from .api_class import Api
 import urllib
 
 class Match_v4(Api):
-    def __init__(self):
+    def __init__(self,region):
+        super().__init__(region)
         self.endpoint_url = "match/v4/"
 
     """

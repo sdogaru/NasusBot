@@ -6,9 +6,9 @@ Class that extends the api template, implements methods to access free
 champion data from the champion_v3 riotgames api
 """
 class Champion_v3(Api):
-    def __init__(self):
+    def __init__(self,region):
+        super().__init__(region)
         self.endpoint_url = "platform/v3/champion-rotations"
-
 
     """
     Returns a list of the current free champion ids

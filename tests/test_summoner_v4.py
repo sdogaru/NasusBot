@@ -7,7 +7,7 @@ from src.api.summoner_v4 import Summoner_v4
 class Test_summoner_v4(unittest.TestCase):
     # username exists, correct functionality case
     def test_username_to_encryptedAccountID(self):
-        sv4 = Summoner_v4()
+        sv4 = Summoner_v4("NA")
         result = sv4.username_to_encryptedAccountID("Šeby")
         if result == -1:
             assert False, "Response code != 200"
@@ -16,12 +16,12 @@ class Test_summoner_v4(unittest.TestCase):
 
     # invalid username case
     def test_bad_username_to_encryptedAccountID(self):
-        sv4 = Summoner_v4()
+        sv4 = Summoner_v4("NA")
         result = sv4.username_to_encryptedAccountID(";;;;;;;;")
         self.assertEqual(result,-1)
 
     def test_username_to_encryptedSummonerID(self):
-        sv4 = Summoner_v4()
+        sv4 = Summoner_v4("NA")
         result = sv4.username_to_encryptedSummonerID("Šeby")
         if result == -1:
             assert False, "Response code != 200"
@@ -30,13 +30,13 @@ class Test_summoner_v4(unittest.TestCase):
 
     # invalid username case
     def test_bad_username_to_encryptedSummonerID(self):
-        sv4 = Summoner_v4()
+        sv4 = Summoner_v4("NA")
         result = sv4.username_to_encryptedSummonerID(";;;;;;;;")
         self.assertEqual(result,-1)
 
     # access account level for an account i dont use anymore
     def test_username_to_level(self):
-        sv4 = Summoner_v4()
+        sv4 = Summoner_v4("NA")
         result = sv4.username_to_level("Faze Seby")
         if result == -1:
             assert False, "Response code != 200"
@@ -45,12 +45,12 @@ class Test_summoner_v4(unittest.TestCase):
 
     # invalid username case
     def test_bad_username_to_level(self):
-        sv4 = Summoner_v4()
+        sv4 = Summoner_v4("NA")
         result = sv4.username_to_level(";;;;;;;;")
         self.assertEqual(result,-1)
 
     def test_username_to_profileIconId(self):
-        sv4 = Summoner_v4()
+        sv4 = Summoner_v4("NA")
         result = sv4.username_to_profileIconId("Šeby")
         if result == -1:
             assert False, "Response code != 200"
@@ -59,13 +59,13 @@ class Test_summoner_v4(unittest.TestCase):
 
     # invalid username case
     def test_bad_username_to_profileIconId(self):
-        sv4 = Summoner_v4()
+        sv4 = Summoner_v4("NA")
         result = sv4.username_to_profileIconId(";;;;;;;;")
         self.assertEqual(result,-1)
 
 
     def test_username_to_puuid(self):
-        sv4 = Summoner_v4()
+        sv4 = Summoner_v4("NA")
         result = sv4.username_to_puuid("Šeby")
         if result == -1:
             assert False, "Response code != 200"

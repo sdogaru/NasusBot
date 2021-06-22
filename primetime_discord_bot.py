@@ -31,6 +31,8 @@ import pymongo
 
 db_token = os.getenv('DB_TOKEN')
 client = pymongo.MongoClient("mongodb+srv://sdogaru:"+db_token+"@matches.vs94y.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
+
+# outdated name for db, but too late to change.
 db = client.AhriBot
 
 intents = discord.Intents(messages=True, guilds=True)
@@ -46,6 +48,10 @@ cv4 = Champion_v3()
 spv4 = Spectator_v4()
 mv4 = Match_v4()
 cm4 = Champion_mastery_v4()
+
+EMBED_COLOR = 0x9932CC
+guild_ids = [722714561136033804]
+
 
 """
 When the bot is added to a server, send a gif in chat to introduce
@@ -67,9 +73,6 @@ async def on_message(message):
 
     if message.author == client.user:
         return
-
-EMBED_COLOR = 0x9932CC
-guild_ids = [722714561136033804]
 
 
 """
@@ -553,7 +556,7 @@ async def championstats(ctx,username:str,champion:str,queueId:int):
 
     # display loading gif while data is retrieved
     embed = discord.Embed(color=EMBED_COLOR,title="Fetching newest data...")
-    embed.set_image(url="https://media.tenor.com/images/2629d421692a139c37b6c43492219a45/tenor.gif")
+    embed.set_image(url="https://64.media.tumblr.com/e59ffcaa310835f2b207bebcf96258d0/f75a4d609d3d34a7-ba/s640x960/397ef2eb12b0750f1dfcecce54ac41ac6299f79e.gif")
 
     message = await ctx.send(embed=embed)
     rdf = get_matches_from_db(encryptedAccountID)
@@ -660,7 +663,7 @@ async def duostats(ctx,username1:str,username2:str,queueId:int):
 
     # send loading message gif into channel while data is fetched
     embed = discord.Embed(color=EMBED_COLOR,title="Searching for duo match data...")
-    embed.set_image(url="https://media.tenor.com/images/2629d421692a139c37b6c43492219a45/tenor.gif")
+    embed.set_image(url="https://64.media.tumblr.com/e59ffcaa310835f2b207bebcf96258d0/f75a4d609d3d34a7-ba/s640x960/397ef2eb12b0750f1dfcecce54ac41ac6299f79e.gif")
     message = await ctx.send(embed=embed)
 
     # get match history for both users, then inner join on common games
@@ -947,7 +950,7 @@ def get_queue_name(queueId):
     if queueId != 0:
         return QUEUE_ID_TO_NAME[queueId]
     else:
-        return "All queues"
+        return "All Queues"
 
 def format_seconds(seconds):
     minutes = seconds // 60

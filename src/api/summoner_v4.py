@@ -7,7 +7,8 @@ data like level, profile pic, and encryptedaccountID from the summoner_v4
 riotgames api
 """
 class Summoner_v4(Api):
-    def __init__(self):
+    def __init__(self,region):
+        super().__init__(region)
         self.endpoint_url = "summoner/v4/summoners/"
 
     """Given a players username, returns corresponding encryptedaccountID"""

@@ -3,65 +3,28 @@ https://baronbot.github.io/
 oauth2 add to server link:
 https://discord.com/api/oauth2/authorize?client_id=722716317160833114&permissions=2148005952&scope=bot%20applications.commands
 
--change from primetime to ahri everywhere
-
-make entry message into embed
-
-consistency for user input? Like use API to get official spelling/casing of usernames and champion namesno matter what the user inputs
-
-incorporate ratelimit support. easiest way is probably to incorporate it into the api make request method, so it automatically is supported by all subclasses.
-
-maybe nosql db to store matches and other info. bring # of requests down 
-
--------------------------------------------------------------
 --------------------------------------------------------------
-Easy:
-
---------------------------------------------------------------
-Medium:
-/championinfo [champion]
-- formated message containing champion description, abilities etc. using https://developer.riotgames.com/docs/lol#data-dragon
----------------------------------------------------------------
-Hard:
-/duo [user1] [user2] [queue]
-- return duo w/r for two players for current season
-- list top 3 champion/role pairings and winrates
-- list mostplayed pairing(s) and winrate:
-
-/duochamps [user1] [champion1] [user2] [champion2] [queue]
-- return duo w/r for two players on specific champions
-
-/duorole [user1] [role1] [user2] [role2] [queue]
-- how to prevent role1 and role2 from being same?
-
-/botlaneduo [user1] [user2]
-
-------------------------------------------------------------------------
-
-/championstats [username] [champion] [queue]
-- cs, kda, w/r 
-
-unsure of these, but could be fun (!bestchamp,!bestrole, ...)
-
-/bestchamps [username]
-- something with the champion mastery api would be easiest.....
-
-/bestrole [username]
-
 /lastgame [username]
 - returned W/L, mode, time , champion, KDA, gold for last game played
+
+/lanewinrates [username]
+- get winrates by position
+
+/track [username]
+- send updates in discord (which channel? since this isnt a response to a message) when a player finishes a game. 
+/stoptrack
+/register
+
+other duo methods (lane,champion etc..)
 --------------------------------------------------------------
 DONE:
-
-hidden messages dont support local(non URL) thumbnail images. Might need to host them. Use a dictionary to map tier to url.
-
 /rank [username] 
-- get username's rank,lp and winrate
+- get username's rank,lp and ranked winrate
 
 /flexrank [username]
 - return 5x5 flex rank, wr,lp,etc for username
 
-/freechamps 
+/free
 - return free champion rotation
 
 /livegame [username]
@@ -70,5 +33,25 @@ hidden messages dont support local(non URL) thumbnail images. Might need to host
 /mastery [username] [champion]
 - display a formatted discord message regarding masteries returned by https://developer.riotgames.com/apis#champion-mastery-v4
 
+/championstats [username] [champion] [queue]
+- cs, kda, w/r 
 
+/duostats [user1] [user2] [queue]
+- return duo w/r + total games played for two players for current season
+- list 5 mostplayed pairing(s) and winrate:
 
+/tips [champion]
+- tips for playing with, and against, a champion 
+
+/abilities [champion]
+- formated message containing champion description, abilities etc. using https://developer.riotgames.com/docs/lol#data-dragon
+
+/lore [champion]
+- lore
+
+/topmastery [username]
+- display top 10 champions by mastery pts for user
+
+/mostplayed [username] [queue]
+- View a user's top 10 most played champions + stats for a selected game queue.
+ 
