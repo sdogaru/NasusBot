@@ -41,13 +41,6 @@ slash = SlashCommand(client, sync_commands=True) # Declares slash commands throu
 
 enabled = True
 
-# classes for accessing riot games api
-sv4 = Summoner_v4()
-lv4 = League_v4()
-cv4 = Champion_v3()
-spv4 = Spectator_v4()
-mv4 = Match_v4()
-cm4 = Champion_mastery_v4()
 
 EMBED_COLOR = 0x9932CC
 guild_ids = [722714561136033804]
@@ -82,32 +75,43 @@ async def on_message(message):
 @slash.slash(name="rank",
              description="View a summoner's soloq rank, lp, and ranked winrate.",
              options=[
-               create_option(
+                create_option(name="region",description="Region-specific server that the user plays on.",option_type=3,required=True),
+                create_option(
                  name="username",
                  description="Summoner Name",
                  option_type=3,
                  required=True
                )
              ], guild_ids=guild_ids)
-async def rank(ctx,username: str):
+async def rank(ctx,username: str,region: str):
+    sv4 = Summoner_v4(region)
+    lv4 = League_v4(region)
+
     encryptedSummonerID = sv4.username_to_encryptedSummonerID(username)
     profileIconId = sv4.username_to_profileIconId(username)
     # check for successful GET on encryptedSummonerID
     if encryptedSummonerID == -1 or profileIconId == -1:
-        await ctx.send(f"The username "+username+" could not be found.")
+        await ctx.send(f"The username "+username+" could not be found on "+region+".")
         return
     else:
+        # display loading gif while data is retrieved
+        embed = discord.Embed(color=EMBED_COLOR,title="Fetching ranked data...")
+        embed.set_image(url="https://64.media.tumblr.com/e59ffcaa310835f2b207bebcf96258d0/f75a4d609d3d34a7-ba/s640x960/397ef2eb12b0750f1dfcecce54ac41ac6299f79e.gif")
+        message = await ctx.send(embed=embed)
+
         username = sv4.username_to_username(username)
         # check for successful request for league entries
         leagueEntryDTOs = lv4.get_ranked_leagues(encryptedSummonerID)
         if leagueEntryDTOs == -1:
-            await ctx.send(f"Error accessing Riot Games API. Please try again later.")
+            error_embed = discord.Embed(color=EMBED_COLOR,title=f"Error accessing Riot Games API. Please try again later.")
+            await message.edit(content="",embed=error_embed)
             return
 
         # filter on soloqueue
         leagueEntryDTOs = [i for i in leagueEntryDTOs if i['queueType'] == "RANKED_SOLO_5x5"]
         if len(leagueEntryDTOs) == 0:
-            await ctx.send(f""+username+" is not ranked in soloqueue for the current season.")
+            error_embed = discord.Embed(color=EMBED_COLOR,title=f""+username+" is not ranked in soloqueue for the current season.")
+            await message.edit(content="",embed=error_embed)
             return
         else:
             # get data from dto and format into discord message
@@ -117,16 +121,17 @@ async def rank(ctx,username: str):
             winrate = "{:.2f}".format(100 * leagueEntryDTOs[0]['wins']/(leagueEntryDTOs[0]['losses']+leagueEntryDTOs[0]['wins']))
             wins = str(leagueEntryDTOs[0]['wins'])
             losses = str(leagueEntryDTOs[0]['losses'])
-            # message_string = ""+username+"\n"+tier+" " +rank + "\nLP: "+lp +"\nWinrate: " + winrate + "% ("+total_games+" games played)"
             file = discord.File("images/"+tier+".png",filename=tier+".png")
             embedVar = discord.Embed(color=EMBED_COLOR)
             embedVar.set_thumbnail(url="attachment://"+tier+".png")
+
             embedVar.set_author(name=username,icon_url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/profileicon/"+str(profileIconId)+".png")
+
             embedVar.add_field(name="Solo/Duo Rank", value=tier+" "+rank+" "+lp +" LP", inline=False)
             embedVar.add_field(name="Winrate", value=winrate+"% ("+wins+"W  "+losses+ "L)",inline=False)
             # display users rank in embed message
             #embedVar.set_thumbnail(url="https://img.rankedboost.com/wp-content/uploads/2014/09/Season_2019_-_Challenger_1.png")
-            await ctx.send(file=file,embed=embedVar)
+            await message.edit(content="",embed=embedVar,file=file)
 
 
 """
@@ -148,9 +153,10 @@ async def flexrank(ctx,username: str):
     profileIconId = sv4.username_to_profileIconId(username)
     # check for successful GET on encryptedSummonerID
     if encryptedSummonerID == -1 or profileIconId == -1:
-        await ctx.send(f"The username "+username+" could not be found.",hidden=True,file=file)
+        await ctx.send(f"The username "+username+" could not be found.")
         return
     else:
+
         username = sv4.username_to_username(username)
         # check for successful request for league entries
         leagueEntryDTOs = lv4.get_ranked_leagues(encryptedSummonerID)
@@ -557,8 +563,8 @@ async def championstats(ctx,username:str,champion:str,queueId:int):
     # display loading gif while data is retrieved
     embed = discord.Embed(color=EMBED_COLOR,title="Fetching newest data...")
     embed.set_image(url="https://64.media.tumblr.com/e59ffcaa310835f2b207bebcf96258d0/f75a4d609d3d34a7-ba/s640x960/397ef2eb12b0750f1dfcecce54ac41ac6299f79e.gif")
-
     message = await ctx.send(embed=embed)
+
     rdf = get_matches_from_db(encryptedAccountID)
     if len(rdf) == 0:
         error_embed = discord.Embed(color=EMBED_COLOR,title=f"" + "Could not find current season match data for "+username)

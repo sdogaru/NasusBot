@@ -37,6 +37,7 @@ class Api():
 
     """Riot API request handler to be used by all subclasses in their calls"""
     def make_api_request(self,url):
+        print(url)
         try:
             # rate limit edge case
             response = requests.get(url)
