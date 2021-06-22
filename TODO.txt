@@ -18,7 +18,7 @@ https://discord.com/api/oauth2/authorize?client_id=722716317160833114&permission
 other duo methods (lane,champion etc..)
 --------------------------------------------------------------
 DONE:
-/rank [username] 
+/rank [region] seby[username] 
 - get username's rank,lp and ranked winrate
 
 /flexrank [username]

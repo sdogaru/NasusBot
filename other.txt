@@ -7,15 +7,25 @@ QUESTIONS:
 
 - need to make slash commands global
 
-- add comments and mild refactoring //maybe a flexible error handler for all the api methods where a function is passed in? idk
+- add comments
 
--change from primetime to ahri (to nasus??) everywhere
+-change from primetime to  nasus?? everywhere
+--riot games
+-- github
+-- disc
+
 - move gifs to image file
+
 
 - add support for different regions outside of NA - take region param in front end but make changes in api backend
 -- im thinking we pass in region as a field for the classes that inherit from api, which then pass that field up to api. 
 -- matchv5 edge case different region names/url
 -- make changes in db method too lol
+-- changes should be made to test files too
+-- duo/match history region shits
+
+
+
 - get matchv5 ready
 
 - lee sin, j4, wukong, all have weird names and need a mapping

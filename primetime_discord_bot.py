@@ -75,7 +75,48 @@ async def on_message(message):
 @slash.slash(name="rank",
              description="View a summoner's soloq rank, lp, and ranked winrate.",
              options=[
-                create_option(name="region",description="Region-specific server that the user plays on.",option_type=3,required=True),
+                create_option(name="region",description="Region-specific server that the user plays on.",option_type=3,required=True,choices=[
+                   create_choice(
+                     name="NA",
+                     value="NA"
+                   ),
+                   create_choice(
+                     name="EUW",
+                     value="EUW"
+                   ),
+                   create_choice(
+                     name="EUNE",
+                     value="EUNE"
+                   ),
+                   create_choice(
+                     name="KR",
+                     value="KR"
+                   ),
+                   create_choice(
+                     name="OCE",
+                     value="OCE"
+                   ),
+                   create_choice(
+                     name="TR",
+                     value="TR"
+                   ),
+                   create_choice(
+                     name="JP",
+                     value="JP"
+                   ),
+                   create_choice(
+                     name="LAN",
+                     value="LAN"
+                   ),
+                   create_choice(
+                     name="LAS",
+                     value="LAS"
+                   ),
+                   create_choice(
+                     name="RU",
+                     value="RU"
+                   ),
+                 ]),
                 create_option(
                  name="username",
                  description="Summoner Name",
@@ -141,6 +182,48 @@ async def rank(ctx,username: str,region: str):
 @slash.slash(name="flexrank",
              description="View a summoner's flex 5v5 rank, lp, and ranked flex winrate.",
              options=[
+             create_option(name="region",description="Region-specific server that the user plays on.",option_type=3,required=True,choices=[
+                create_choice(
+                  name="NA",
+                  value="NA"
+                ),
+                create_choice(
+                  name="EUW",
+                  value="EUW"
+                ),
+                create_choice(
+                  name="EUNE",
+                  value="EUNE"
+                ),
+                create_choice(
+                  name="KR",
+                  value="KR"
+                ),
+                create_choice(
+                  name="OCE",
+                  value="OCE"
+                ),
+                create_choice(
+                  name="TR",
+                  value="TR"
+                ),
+                create_choice(
+                  name="JP",
+                  value="JP"
+                ),
+                create_choice(
+                  name="LAN",
+                  value="LAN"
+                ),
+                create_choice(
+                  name="LAS",
+                  value="LAS"
+                ),
+                create_choice(
+                  name="RU",
+                  value="RU"
+                ),
+              ]),
                create_option(
                  name="username",
                  description="Summoner Name",
@@ -148,7 +231,10 @@ async def rank(ctx,username: str,region: str):
                  required=True
                )
              ], guild_ids=guild_ids)
-async def flexrank(ctx,username: str):
+async def flexrank(ctx,username: str, region:str):
+    sv4 = Summoner_v4(region)
+    lv4 = League_v4(region)
+
     encryptedSummonerID = sv4.username_to_encryptedSummonerID(username)
     profileIconId = sv4.username_to_profileIconId(username)
     # check for successful GET on encryptedSummonerID
@@ -156,18 +242,24 @@ async def flexrank(ctx,username: str):
         await ctx.send(f"The username "+username+" could not be found.")
         return
     else:
+        # display loading gif while data is retrieved
+        embed = discord.Embed(color=EMBED_COLOR,title="Fetching flex data...")
+        embed.set_image(url="https://64.media.tumblr.com/e59ffcaa310835f2b207bebcf96258d0/f75a4d609d3d34a7-ba/s640x960/397ef2eb12b0750f1dfcecce54ac41ac6299f79e.gif")
+        message = await ctx.send(embed=embed)
 
         username = sv4.username_to_username(username)
         # check for successful request for league entries
         leagueEntryDTOs = lv4.get_ranked_leagues(encryptedSummonerID)
         if leagueEntryDTOs == -1:
-            await ctx.send(f"Error accessing Riot Games API. Please try again later.")
+            error_embed = discord.Embed(color=EMBED_COLOR,title=f"Error accessing Riot Games API. Please try again later.")
+            await message.edit(content="",embed=error_embed)
             return
 
         # filter on flex queue
         leagueEntryDTOs = [i for i in leagueEntryDTOs if i['queueType'] == "RANKED_FLEX_SR"]
         if len(leagueEntryDTOs) == 0:
-            await ctx.send(f""+username+" is not ranked in 5x5 flex for the current season.")
+            error_embed = discord.Embed(color=EMBED_COLOR,title=f""+username+" is not ranked in 5x5 flex for the current season.")
+            await message.edit(content="",embed=error_embed)
             return
         else:
             # get data from dto and format into discord message
@@ -186,7 +278,7 @@ async def flexrank(ctx,username: str):
             embedVar.add_field(name="Winrate", value=winrate+"% ("+wins+"W  "+losses+ "L)",inline=False)
             # display users rank in embed message
             #embedVar.set_thumbnail(url="https://img.rankedboost.com/wp-content/uploads/2014/09/Season_2019_-_Challenger_1.png")
-            await ctx.send(file=file,embed=embedVar)
+            await message.edit(content="",embed=embedVar,file=file)
 
 """
 /free
