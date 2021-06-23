@@ -54,7 +54,7 @@ async def on_guild_join(guild):
     #general = discord.utils.find(lambda x: x.name == 'general',  guild.text_channels)
     if len(guild.text_channels) > 1: #general:
         await guild.text_channels[0].send(file=discord.File('ahri_gif.gif'))
-        await guild.text_channels[0].send("Hi, I'm Ahri - a Discord bot for all things League of Legends! To get started, type /")
+        await guild.text_channels[0].send("Hi, I'm NasusBot - a Discord bot for all things League of Legends! To get started, type /")
 
 @client.event
 async def on_ready():
@@ -819,6 +819,48 @@ async def topmastery(ctx,username:str,region:str):
 @slash.slash(name="championstats",
              description="View a user's KD/A, win rate, damage and other stats on a specific champion.",
              options=[
+             create_option(name="region",description="Region-specific server that the user plays on.",option_type=3,required=True,choices=[
+                create_choice(
+                  name="NA",
+                  value="NA"
+                ),
+                create_choice(
+                  name="EUW",
+                  value="EUW"
+                ),
+                create_choice(
+                  name="EUNE",
+                  value="EUNE"
+                ),
+                create_choice(
+                  name="KR",
+                  value="KR"
+                ),
+                create_choice(
+                  name="OCE",
+                  value="OCE"
+                ),
+                create_choice(
+                  name="TR",
+                  value="TR"
+                ),
+                create_choice(
+                  name="JP",
+                  value="JP"
+                ),
+                create_choice(
+                  name="LAN",
+                  value="LAN"
+                ),
+                create_choice(
+                  name="LAS",
+                  value="LAS"
+                ),
+                create_choice(
+                  name="RU",
+                  value="RU"
+                ),
+              ]),
                create_option(name="username",description="Summoner Name",option_type=3,required=True),
                create_option(name="champion",description="Name of the champion",option_type=3,required=True),
                create_option(name="queue",description="Summoner's rift queue type",option_type=4,required=True, choices=[
@@ -844,26 +886,31 @@ async def topmastery(ctx,username:str,region:str):
                   )
                 ])
                ],guild_ids=guild_ids)
-async def championstats(ctx,username:str,champion:str,queueId:int):
+async def championstats(ctx,region:str,username:str,champion:str,queueId:int):
+    embed = discord.Embed(color=EMBED_COLOR,title="Fetching newest data...")
+    embed.set_image(url="https://64.media.tumblr.com/e59ffcaa310835f2b207bebcf96258d0/f75a4d609d3d34a7-ba/s640x960/397ef2eb12b0750f1dfcecce54ac41ac6299f79e.gif")
+    message = await ctx.send(embed=embed)
+
+    sv4 = Summoner_v4(region)
+    mv4 = Match_v4(region)
+
     encryptedAccountID = sv4.username_to_encryptedAccountID(username)
     profileIconId = sv4.username_to_profileIconId(username)
     if encryptedAccountID == -1 or profileIconId == -1:
-        await ctx.send(f"The username "+username+" could not be found.")
+        error_embed = discord.Embed(color=EMBED_COLOR,title=f"The username "+username+" could not be found.")
+        await message.edit(content="",embed=error_embed)
         return
     username = sv4.username_to_username(username)
     #check champion input
     if champion.lower() not in CHAMPION_NAME_TO_ID:
-        await ctx.send(f"" + champion +" is not a valid champion name.")
+        error_embed = discord.Embed(color=EMBED_COLOR,title=f"" + champion +" is not a valid champion name.")
+        await message.edit(content="",embed=error_embed)
         return
 
     champion = CHAMPION_ID_TO_NAME[CHAMPION_NAME_TO_ID[champion.lower()]]
 
     # display loading gif while data is retrieved
-    embed = discord.Embed(color=EMBED_COLOR,title="Fetching newest data...")
-    embed.set_image(url="https://64.media.tumblr.com/e59ffcaa310835f2b207bebcf96258d0/f75a4d609d3d34a7-ba/s640x960/397ef2eb12b0750f1dfcecce54ac41ac6299f79e.gif")
-    message = await ctx.send(embed=embed)
-
-    rdf = get_matches_from_db(encryptedAccountID)
+    rdf = get_matches_from_db(encryptedAccountID,mv4,sv4)
     if len(rdf) == 0:
         error_embed = discord.Embed(color=EMBED_COLOR,title=f"" + "Could not find current season match data for "+username)
         await message.edit(content="",embed=error_embed)
@@ -920,6 +967,48 @@ async def championstats(ctx,username:str,champion:str,queueId:int):
 @slash.slash(name="duostats",
              description="View a duo's w/r, games played, and their most common champion pairings and stats.",
              options=[
+             create_option(name="region",description="Region-specific server that the user plays on.",option_type=3,required=True,choices=[
+                create_choice(
+                  name="NA",
+                  value="NA"
+                ),
+                create_choice(
+                  name="EUW",
+                  value="EUW"
+                ),
+                create_choice(
+                  name="EUNE",
+                  value="EUNE"
+                ),
+                create_choice(
+                  name="KR",
+                  value="KR"
+                ),
+                create_choice(
+                  name="OCE",
+                  value="OCE"
+                ),
+                create_choice(
+                  name="TR",
+                  value="TR"
+                ),
+                create_choice(
+                  name="JP",
+                  value="JP"
+                ),
+                create_choice(
+                  name="LAN",
+                  value="LAN"
+                ),
+                create_choice(
+                  name="LAS",
+                  value="LAS"
+                ),
+                create_choice(
+                  name="RU",
+                  value="RU"
+                ),
+              ]),
                create_option(name="username1",description="Summoner Name",option_type=3,required=True),
                create_option(name="username2",description="Summoner Name",option_type=3,required=True),
                create_option(name="queue",description="Summoner's rift queue type",option_type=4,required=True, choices=[
@@ -945,34 +1034,38 @@ async def championstats(ctx,username:str,champion:str,queueId:int):
                   )
                 ])
                ],guild_ids=guild_ids)
-async def duostats(ctx,username1:str,username2:str,queueId:int):
+async def duostats(ctx,region:str,username1:str,username2:str,queueId:int):
+    embed = discord.Embed(color=EMBED_COLOR,title="Fetching newest data...")
+    embed.set_image(url="https://64.media.tumblr.com/e59ffcaa310835f2b207bebcf96258d0/f75a4d609d3d34a7-ba/s640x960/397ef2eb12b0750f1dfcecce54ac41ac6299f79e.gif")
+    message = await ctx.send(embed=embed)
+
+    sv4 = Summoner_v4(region)
+    mv4 = Match_v4(region)
+
     encryptedAccountID = sv4.username_to_encryptedAccountID(username1)
     profileIconId = sv4.username_to_profileIconId(username1)
 
     # check if username1 is valid input
     if encryptedAccountID == -1 or profileIconId == -1:
-        await ctx.send(f"The username "+username1+" could not be found.")
+        error_embed = discord.Embed(color=EMBED_COLOR,title=f"The username "+username1+" could not be found.")
+        await message.edit(content="",embed=error_embed)
         return
     username = sv4.username_to_username(username1)
 
     #check if username2 is valid input
     duo_encryptedAccountID = sv4.username_to_encryptedAccountID(username2)
     if duo_encryptedAccountID == -1:
-        await ctx.send(f"The username "+username2+" could not be found.")
+        error_embed = discord.Embed(color=EMBED_COLOR,title=f"The username "+username2+" could not be found.")
+        await message.edit(content="",embed=error_embed)
         return
     duo_username = sv4.username_to_username(username2)
 
     # convert queueId into readable string
     queueName = get_queue_name(queueId)
 
-    # send loading message gif into channel while data is fetched
-    embed = discord.Embed(color=EMBED_COLOR,title="Searching for duo match data...")
-    embed.set_image(url="https://64.media.tumblr.com/e59ffcaa310835f2b207bebcf96258d0/f75a4d609d3d34a7-ba/s640x960/397ef2eb12b0750f1dfcecce54ac41ac6299f79e.gif")
-    message = await ctx.send(embed=embed)
-
     # get match history for both users, then inner join on common games
-    df1 = get_matches_from_db(encryptedAccountID)
-    df2 = get_matches_from_db(duo_encryptedAccountID)
+    df1 = get_matches_from_db(encryptedAccountID,mv4,sv4)
+    df2 = get_matches_from_db(duo_encryptedAccountID,mv4,sv4)
 
     # no match history edge case
     if len(df1) == 0:
@@ -1050,6 +1143,48 @@ async def duostats(ctx,username1:str,username2:str,queueId:int):
 @slash.slash(name="mostplayed",
              description="View stats for user's top 10 most played champions in a selected game queue.",
              options=[
+             create_option(name="region",description="Region-specific server that the user plays on.",option_type=3,required=True,choices=[
+                create_choice(
+                  name="NA",
+                  value="NA"
+                ),
+                create_choice(
+                  name="EUW",
+                  value="EUW"
+                ),
+                create_choice(
+                  name="EUNE",
+                  value="EUNE"
+                ),
+                create_choice(
+                  name="KR",
+                  value="KR"
+                ),
+                create_choice(
+                  name="OCE",
+                  value="OCE"
+                ),
+                create_choice(
+                  name="TR",
+                  value="TR"
+                ),
+                create_choice(
+                  name="JP",
+                  value="JP"
+                ),
+                create_choice(
+                  name="LAN",
+                  value="LAN"
+                ),
+                create_choice(
+                  name="LAS",
+                  value="LAS"
+                ),
+                create_choice(
+                  name="RU",
+                  value="RU"
+                ),
+              ]),
                create_option(name="username",description="Summoner Name",option_type=3,required=True),
                create_option(name="queue",description="Summoner's rift queue type",option_type=4,required=True, choices=[
                   create_choice(
@@ -1074,25 +1209,27 @@ async def duostats(ctx,username1:str,username2:str,queueId:int):
                   )
                 ])
                ],guild_ids=guild_ids)
-async def mostplayed(ctx,username:str,queueId:int):
-    encryptedAccountID = sv4.username_to_encryptedAccountID(username)
-    profileIconId = sv4.username_to_profileIconId(username)
-    if encryptedAccountID == -1 or profileIconId == -1:
-        await ctx.send(f"The username "+username+" could not be found.")
-        return
-    username = sv4.username_to_username(username)
-
-
-    # display loading gif while data is processed
+async def mostplayed(ctx,region:str,username:str,queueId:int):
     embed = discord.Embed(color=EMBED_COLOR,title="Fetching newest data...")
     embed.set_image(url="https://64.media.tumblr.com/e59ffcaa310835f2b207bebcf96258d0/f75a4d609d3d34a7-ba/s640x960/397ef2eb12b0750f1dfcecce54ac41ac6299f79e.gif")
     message = await ctx.send(embed=embed)
 
+    sv4 = Summoner_v4(region)
+    mv4 = Match_v4(region)
+
+    encryptedAccountID = sv4.username_to_encryptedAccountID(username)
+    profileIconId = sv4.username_to_profileIconId(username)
+    if encryptedAccountID == -1 or profileIconId == -1:
+        error_embed = discord.Embed(color=EMBED_COLOR,title=f"The username "+username+" could not be found.")
+        await message.edit(content="",embed=error_embed)
+        return
+    username = sv4.username_to_username(username)
+
     # get match data from database
-    df = get_matches_from_db(encryptedAccountID)
+    df = get_matches_from_db(encryptedAccountID,mv4,sv4)
     if len(df) == 0:
-        print('empty')
         error_embed = discord.Embed(color=EMBED_COLOR,title=f"" + "Could not find current season match data for "+username)
+        await message.edit(content="",embed=error_embed)
         return
 
     # filter if queue is specified
@@ -1143,9 +1280,10 @@ async def mostplayed(ctx,username:str,queueId:int):
 Helper method that retrieved matches played from the database, and gets
 new matches from the riot games api when necessary.
 
+Takes accountId, and region specific api objects
 Returns a dataframe, where each row is a user's stats from a specific match.
 """
-def get_matches_from_db(encryptedAccountID):
+def get_matches_from_db(encryptedAccountID,mv,sv4):
     # Generate unix timestamp for 01/01/Current Year (LoL season start apprx.)
     year = datetime.date.today().year
     date = datetime.datetime(year, 1, 1)
@@ -1169,7 +1307,7 @@ def get_matches_from_db(encryptedAccountID):
     loop = True
     while loop:
         #get match list for 100 game window (max allowed by riot api) and check for valid response
-        d = mv4.get_match_list(accountId,beginIndex=beginIndex,endIndex=endIndex)
+        d = mv.get_match_list(accountId,beginIndex=beginIndex,endIndex=endIndex)
         #check if d == -1
         if d == -1:
             # DISCORD MESSAGE HERE
@@ -1181,7 +1319,7 @@ def get_matches_from_db(encryptedAccountID):
         matchList = d['matches']
         for i in matchList:
             # MAKE REQUEST GETMATCH and check for valid response
-            match = mv4.get_match(i['gameId'])
+            match = mv.get_match(i['gameId'])
             if match == -1:
                 if len(objects) > 0:
                     loop = False
