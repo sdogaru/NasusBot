@@ -128,17 +128,19 @@ async def rank(ctx,username: str,region: str):
     sv4 = Summoner_v4(region)
     lv4 = League_v4(region)
 
+    embed = discord.Embed(color=EMBED_COLOR,title="Fetching flex data...")
+    embed.set_image(url="https://64.media.tumblr.com/e59ffcaa310835f2b207bebcf96258d0/f75a4d609d3d34a7-ba/s640x960/397ef2eb12b0750f1dfcecce54ac41ac6299f79e.gif")
+    message = await ctx.send(embed=embed)
+
     encryptedSummonerID = sv4.username_to_encryptedSummonerID(username)
     profileIconId = sv4.username_to_profileIconId(username)
     # check for successful GET on encryptedSummonerID
     if encryptedSummonerID == -1 or profileIconId == -1:
-        await ctx.send(f"The username "+username+" could not be found on "+region+".")
+        error_embed = discord.Embed(color=EMBED_COLOR,title=f"The username "+username+" could not be found on "+region+".")
+        await message.edit(content="",embed=error_embed)
         return
     else:
         # display loading gif while data is retrieved
-        embed = discord.Embed(color=EMBED_COLOR,title="Fetching ranked data...")
-        embed.set_image(url="https://64.media.tumblr.com/e59ffcaa310835f2b207bebcf96258d0/f75a4d609d3d34a7-ba/s640x960/397ef2eb12b0750f1dfcecce54ac41ac6299f79e.gif")
-        message = await ctx.send(embed=embed)
 
         username = sv4.username_to_username(username)
         # check for successful request for league entries
@@ -235,17 +237,19 @@ async def flexrank(ctx,username: str, region:str):
     sv4 = Summoner_v4(region)
     lv4 = League_v4(region)
 
+    embed = discord.Embed(color=EMBED_COLOR,title="Fetching flex data...")
+    embed.set_image(url="https://64.media.tumblr.com/e59ffcaa310835f2b207bebcf96258d0/f75a4d609d3d34a7-ba/s640x960/397ef2eb12b0750f1dfcecce54ac41ac6299f79e.gif")
+    message = await ctx.send(embed=embed)
+
     encryptedSummonerID = sv4.username_to_encryptedSummonerID(username)
     profileIconId = sv4.username_to_profileIconId(username)
     # check for successful GET on encryptedSummonerID
     if encryptedSummonerID == -1 or profileIconId == -1:
-        await ctx.send(f"The username "+username+" could not be found.")
+        error_embed = discord.Embed(color=EMBED_COLOR,title=f"The username "+username+" could not be found.")
+        await message.edit(content="",embed=error_embed)
         return
     else:
         # display loading gif while data is retrieved
-        embed = discord.Embed(color=EMBED_COLOR,title="Fetching flex data...")
-        embed.set_image(url="https://64.media.tumblr.com/e59ffcaa310835f2b207bebcf96258d0/f75a4d609d3d34a7-ba/s640x960/397ef2eb12b0750f1dfcecce54ac41ac6299f79e.gif")
-        message = await ctx.send(embed=embed)
 
         username = sv4.username_to_username(username)
         # check for successful request for league entries
@@ -539,15 +543,16 @@ async def livegame(ctx, username:str,region:str):
     sv4 = Summoner_v4(region)
     lv4 = League_v4(region)
 
+    embed = discord.Embed(color=EMBED_COLOR,title="Fetching live game data...")
+    embed.set_image(url="https://64.media.tumblr.com/e59ffcaa310835f2b207bebcf96258d0/f75a4d609d3d34a7-ba/s640x960/397ef2eb12b0750f1dfcecce54ac41ac6299f79e.gif")
+    message = await ctx.send(embed=embed)
+
     CurrentGameInfo = spv4.get_active_game(sv4.username_to_encryptedSummonerID(username))
     profileIconId = sv4.username_to_profileIconId(username)
     if CurrentGameInfo == -1 or profileIconId == -1:
-        await ctx.send(f""+username+" is not currently in a game.")
+        error_embed = discord.Embed(color=EMBED_COLOR,title=f""+username+" is not currently in a game.")
+        await message.edit(content="",embed=error_embed)
         return
-
-    embed = discord.Embed(color=EMBED_COLOR,title="Fetching live data...")
-    embed.set_image(url="https://64.media.tumblr.com/e59ffcaa310835f2b207bebcf96258d0/f75a4d609d3d34a7-ba/s640x960/397ef2eb12b0750f1dfcecce54ac41ac6299f79e.gif")
-    message = await ctx.send(embed=embed)
 
 
     username = sv4.username_to_username(username)
@@ -714,26 +719,77 @@ async def mastery(ctx, username:str,champion:str,region:str):
 @slash.slash(name="topmastery",
              description="View a user's top 10 champions by mastery points.",
              options=[
+               create_option(name="region",description="Region-specific server that the user plays on.",option_type=3,required=True,choices=[
+                  create_choice(
+                    name="NA",
+                    value="NA"
+                  ),
+                  create_choice(
+                    name="EUW",
+                    value="EUW"
+                  ),
+                  create_choice(
+                    name="EUNE",
+                    value="EUNE"
+                  ),
+                  create_choice(
+                    name="KR",
+                    value="KR"
+                  ),
+                  create_choice(
+                    name="OCE",
+                    value="OCE"
+                  ),
+                  create_choice(
+                    name="TR",
+                    value="TR"
+                  ),
+                  create_choice(
+                    name="JP",
+                    value="JP"
+                  ),
+                  create_choice(
+                    name="LAN",
+                    value="LAN"
+                  ),
+                  create_choice(
+                    name="LAS",
+                    value="LAS"
+                  ),
+                  create_choice(
+                    name="RU",
+                    value="RU"
+                  ),
+                ]),
                create_option(
                  name="username",
                  description="Summoner Name",
                  option_type=3,
                  required=True
                )],guild_ids=guild_ids)
-async def topmastery(ctx,username:str):
+async def topmastery(ctx,username:str,region:str):
+    embed = discord.Embed(color=EMBED_COLOR,title="Fetching mastery data...")
+    embed.set_image(url="https://64.media.tumblr.com/e59ffcaa310835f2b207bebcf96258d0/f75a4d609d3d34a7-ba/s640x960/397ef2eb12b0750f1dfcecce54ac41ac6299f79e.gif")
+    message = await ctx.send(embed=embed)
+
+    cm4 = Champion_mastery_v4(region)
+    sv4 = Summoner_v4(region)
+
     encryptedSummonerID = sv4.username_to_encryptedSummonerID(username)
     profileIconId = sv4.username_to_profileIconId(username)
 
     # check for successful GET on encryptedSummonerID
     if encryptedSummonerID == -1 or profileIconId == -1:
-        await ctx.send(f"The username "+username+" could not be found.")
+        error_embed = discord.Embed(color=EMBED_COLOR,title=f"The username "+username+" could not be found.")
+        await message.edit(content="",embed=error_embed)
         return
     username = sv4.username_to_username(username)
 
     top_10 = cm4.get_all_champion_mastery(encryptedSummonerID)
 
     if top_10 == -1 or len(top_10) == 0:
-        await ctx.send(f"Champion mastery data for "+username+" could not be retrieved.")
+        error_embed = discord.Embed(color=EMBED_COLOR,title=f"Champion mastery data for "+username+" could not be retrieved.")
+        await message.edit(content="",embed=error_embed)
         return
 
     if len(top_10) > 10:
@@ -745,7 +801,7 @@ async def topmastery(ctx,username:str):
     for i in top_10:
         champion_str += CHAMPION_ID_TO_NAME[i['championId']] +'\n'
         point_str += str(i['championPoints']) + " pts\n"
-        mastery_str += 'Mastery '+str(i['championLevel'])+'\n'
+        mastery_str += 'Level '+str(i['championLevel'])+'\n'
 
     embedVar = discord.Embed(color=EMBED_COLOR,title="Top 10 Mastered Champions")
     embedVar.set_thumbnail(url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/champion/"+CHAMPION_ID_TO_NAME[top_10[0]['championId']]+".png")
@@ -754,7 +810,7 @@ async def topmastery(ctx,username:str):
     embedVar.add_field(name="Points",value=point_str,inline=True)
     embedVar.add_field(name="Mastery",value=mastery_str,inline=True)
 
-    await ctx.send(embed=embedVar)
+    await message.edit(embed=embedVar)
 
 """
 /championstats [username] [champion] [queue]
