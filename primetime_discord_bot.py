@@ -486,18 +486,70 @@ async def lore(ctx,champion:str):
 @slash.slash(name="livegame",
              description="Get live game data (if available) for the specified user.",
              options=[
+             create_option(name="region",description="Region-specific server that the user plays on.",option_type=3,required=True,choices=[
+                create_choice(
+                  name="NA",
+                  value="NA"
+                ),
+                create_choice(
+                  name="EUW",
+                  value="EUW"
+                ),
+                create_choice(
+                  name="EUNE",
+                  value="EUNE"
+                ),
+                create_choice(
+                  name="KR",
+                  value="KR"
+                ),
+                create_choice(
+                  name="OCE",
+                  value="OCE"
+                ),
+                create_choice(
+                  name="TR",
+                  value="TR"
+                ),
+                create_choice(
+                  name="JP",
+                  value="JP"
+                ),
+                create_choice(
+                  name="LAN",
+                  value="LAN"
+                ),
+                create_choice(
+                  name="LAS",
+                  value="LAS"
+                ),
+                create_choice(
+                  name="RU",
+                  value="RU"
+                ),
+              ]),
                create_option(
                  name="username",
                  description="Summoner Name",
                  option_type=3,
                  required=True
                )],guild_ids=guild_ids)
-async def livegame(ctx, username:str):
+async def livegame(ctx, username:str,region:str):
+    spv4 = Spectator_v4(region)
+    sv4 = Summoner_v4(region)
+    lv4 = League_v4(region)
+
     CurrentGameInfo = spv4.get_active_game(sv4.username_to_encryptedSummonerID(username))
     profileIconId = sv4.username_to_profileIconId(username)
     if CurrentGameInfo == -1 or profileIconId == -1:
         await ctx.send(f""+username+" is not currently in a game.")
         return
+
+    embed = discord.Embed(color=EMBED_COLOR,title="Fetching live data...")
+    embed.set_image(url="https://64.media.tumblr.com/e59ffcaa310835f2b207bebcf96258d0/f75a4d609d3d34a7-ba/s640x960/397ef2eb12b0750f1dfcecce54ac41ac6299f79e.gif")
+    message = await ctx.send(embed=embed)
+
+
     username = sv4.username_to_username(username)
     # title is map, game mode and time elapsed
     embedVar = discord.Embed(color=EMBED_COLOR,title=MAP_ID_TO_NAME[CurrentGameInfo['mapId']]+" | "+QUEUE_ID_TO_NAME[CurrentGameInfo['gameQueueConfigId']]+' | '+ format_seconds(CurrentGameInfo['gameLength']))
@@ -512,7 +564,8 @@ async def livegame(ctx, username:str):
     for i in blue_team_users:
         leagueEntryDTOs = lv4.get_ranked_leagues(i)
         if leagueEntryDTOs == -1:
-            await ctx.send(f"Error accessing Riot Games API. Please try again later.")
+            error_embed = discord.Embed(color=EMBED_COLOR,title=f"Error accessing Riot Games API. Please try again later.")
+            await message.edit(content="",embed=error_embed)
             return
         else:
             # filter on gamequeue
@@ -528,7 +581,8 @@ async def livegame(ctx, username:str):
     for i in red_team_users:
         leagueEntryDTOs = lv4.get_ranked_leagues(i)
         if leagueEntryDTOs == -1:
-            await ctx.send(f"Error accessing Riot Games API. Please try again later.")
+            error_embed = discord.Embed(color=EMBED_COLOR,title=f"Error accessing Riot Games API. Please try again later.")
+            await message.edit(content="",embed=error_embed)
             return
         else:
             # filter on gamequeue
@@ -553,7 +607,7 @@ async def livegame(ctx, username:str):
     participants = CurrentGameInfo['participants']
     championId = [i['championId'] for i in participants if i['summonerName'].lower() == username.lower()][0]
     embedVar.set_thumbnail(url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/champion/"+CHAMPION_ID_TO_NAME[championId]+".png")
-    await ctx.send(embed=embedVar)
+    await message.edit(content="",embed=embedVar)
 
 
 """
@@ -563,26 +617,78 @@ async def livegame(ctx, username:str):
 @slash.slash(name="mastery",
              description="View a player's mastery score for a specific champion.",
              options=[
+               create_option(name="region",description="Region-specific server that the user plays on.",option_type=3,required=True,choices=[
+                  create_choice(
+                    name="NA",
+                    value="NA"
+                  ),
+                  create_choice(
+                    name="EUW",
+                    value="EUW"
+                  ),
+                  create_choice(
+                    name="EUNE",
+                    value="EUNE"
+                  ),
+                  create_choice(
+                    name="KR",
+                    value="KR"
+                  ),
+                  create_choice(
+                    name="OCE",
+                    value="OCE"
+                  ),
+                  create_choice(
+                    name="TR",
+                    value="TR"
+                  ),
+                  create_choice(
+                    name="JP",
+                    value="JP"
+                  ),
+                  create_choice(
+                    name="LAN",
+                    value="LAN"
+                  ),
+                  create_choice(
+                    name="LAS",
+                    value="LAS"
+                  ),
+                  create_choice(
+                    name="RU",
+                    value="RU"
+                  ),
+                ]),
                create_option(name="username",description="Summoner Name",option_type=3,required=True),
                create_option(name="champion",description="Name of the champion",option_type=3,required=True)],guild_ids=guild_ids)
-async def mastery(ctx, username:str,champion:str):
+async def mastery(ctx, username:str,champion:str,region:str):
+    embed = discord.Embed(color=EMBED_COLOR,title="Fetching mastery data...")
+    embed.set_image(url="https://64.media.tumblr.com/e59ffcaa310835f2b207bebcf96258d0/f75a4d609d3d34a7-ba/s640x960/397ef2eb12b0750f1dfcecce54ac41ac6299f79e.gif")
+    message = await ctx.send(embed=embed)
+
+    cm4 = Champion_mastery_v4(region)
+    sv4 = Summoner_v4(region)
+
     encryptedSummonerID = sv4.username_to_encryptedSummonerID(username)
     profileIconId = sv4.username_to_profileIconId(username)
 
     # check for successful GET on encryptedSummonerID
     if encryptedSummonerID == -1 or profileIconId == -1:
-        await ctx.send(f"The username "+username+" could not be found.")
+        error_embed = discord.Embed(color=EMBED_COLOR,title=f"The username "+username+" could not be found.")
+        await message.edit(content="",embed=error_embed)
         return
     username = sv4.username_to_username(username)
     #check champion input
     if champion.lower() not in CHAMPION_NAME_TO_ID:
-        await ctx.send(f"" + champion +" is not a valid champion name.")
+        error_embed = discord.Embed(color=EMBED_COLOR,title=f"" + champion +" is not a valid champion name.")
+        await message.edit(content="",embed=error_embed)
         return
 
     champion = CHAMPION_ID_TO_NAME[CHAMPION_NAME_TO_ID[champion.lower()]]
     mastery_dto = cm4.get_individual_champion_mastery(encryptedSummonerID,CHAMPION_NAME_TO_ID[champion.lower()])
     if mastery_dto == -1:
-        await ctx.send(f""+username+" has no available mastery data for "+champion)
+        error_embed = discord.Embed(color=EMBED_COLOR,title=f""+username+" has no available mastery data for "+champion)
+        await message.edit(content="",embed=error_embed)
         return
 
 
@@ -599,7 +705,7 @@ async def mastery(ctx, username:str,champion:str):
     # display png of mastery at bototm
     file = discord.File("images/mastery-"+str(mastery_dto['championLevel'])+".png",filename="mastery-"+str(mastery_dto['championLevel'])+".png")
     embedVar.set_image(url="attachment://mastery-"+str(mastery_dto['championLevel'])+".png")
-    await ctx.send(embed=embedVar,file=file)
+    await message.edit(embed=embedVar,file=file)
 
 """
 /topmastery

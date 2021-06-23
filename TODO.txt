@@ -1,5 +1,3 @@
-https://baronbot.github.io/
-
 oauth2 add to server link:
 https://discord.com/api/oauth2/authorize?client_id=722716317160833114&permissions=2148005952&scope=bot%20applications.commands
 
@@ -18,16 +16,16 @@ https://discord.com/api/oauth2/authorize?client_id=722716317160833114&permission
 other duo methods (lane,champion etc..)
 --------------------------------------------------------------
 DONE:
-/rank [region] seby[username] 
+/rank [region] [username] 
 - get username's rank,lp and ranked winrate
 
-/flexrank [username]
-- return 5x5 flex rank, wr,lp,etc for username
+/flexrank [region] [username]
+- return username's 5x5 flex rank, wr,lp,etc 
 
-/free
+/free [region]
 - return free champion rotation
 
-/livegame [username]
+/livegame [region] [username]
 - live game info if available
 
 /mastery [username] [champion]
