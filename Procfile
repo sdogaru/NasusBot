@@ -1,1 +1,1 @@
-Worker: python NasusBot.py
+worker: python primetime_bot.py

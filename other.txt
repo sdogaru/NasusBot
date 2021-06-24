@@ -2,8 +2,8 @@ Advanced Statistics Pathway:
 QUESTIONS:
 
 - figure out hosting
--- probably host on acer laptop... heroku will cost $$$$
--- or go with $7 dollar heroku plan
+-- was able to use pipreqs to generate a requirements.txt,everything should be good on heroku if solve the pandas issues w/ buildpack https://elements.heroku.com/buildpacks/pandas-dev/pandas#buildpack-instructions
+
 
 - apply for rate limit increase + change name to nasus bot
 -- give description of the bot
