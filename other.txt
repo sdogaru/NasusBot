@@ -3,28 +3,22 @@ QUESTIONS:
 
 - apply for rate limit increase
 
+- probably host on acer laptop... heroku will cost $$$$
+-- or go with $7 dollar heroku plan
+
 - publish to top.gg and other bot sites
 
 - need to make slash commands global
+--- EITHER MAKE GLOBAL or have rioter join the testing discord 
 
 - add comments
 
--change from primetime to  nasus?? everywhere
+-change from primetime to NasusBot everywhere
 --riot games
 -- github
 -- disc
 
 - move gifs to image file
-
-
-- add support for different regions outside of NA - take region param in front end but make changes in api backend
--- im thinking we pass in region as a field for the classes that inherit from api, which then pass that field up to api. 
--- matchv5 edge case different region names/url
--- make changes in db method too lol
--- changes should be made to test files too
--- duo/match history region shits
-
-
 
 - get matchv5 ready
 
@@ -34,7 +28,6 @@ QUESTIONS:
 
 -sharding? https://anidiots.guide/understanding/sharding
 -- sharding not reccomended until 2500+ guilds
-
 
 
 REFACTOR CODE AND ADD DB

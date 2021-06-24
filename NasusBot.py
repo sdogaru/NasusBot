@@ -53,8 +53,9 @@ When the bot is added to a server, send a gif in chat to introduce
 async def on_guild_join(guild):
     #general = discord.utils.find(lambda x: x.name == 'general',  guild.text_channels)
     if len(guild.text_channels) > 1: #general:
-        await guild.text_channels[0].send(file=discord.File('ahri_gif.gif'))
-        await guild.text_channels[0].send("Hi, I'm NasusBot - a Discord bot for all things League of Legends! To get started, type /")
+        embed = discord.Embed(color=EMBED_COLOR,title="Hi, I'm NasusBot - a Discord bot for all things League of Legends! To get started, type /")
+        embed.set_image(url="https://64.media.tumblr.com/0e48c6d56405dc1228bcfc8879c51046/f75a4d609d3d34a7-52/s400x600/8901bb6912e817dfdd022e989ff5b2f0a634dca3.gif")
+        await guild.text_channels[0].send(embed=embed)
 
 @client.event
 async def on_ready():
@@ -128,7 +129,7 @@ async def rank(ctx,username: str,region: str):
     sv4 = Summoner_v4(region)
     lv4 = League_v4(region)
 
-    embed = discord.Embed(color=EMBED_COLOR,title="Fetching flex data...")
+    embed = discord.Embed(color=EMBED_COLOR,title="Fetching ranked data...")
     embed.set_image(url="https://64.media.tumblr.com/e59ffcaa310835f2b207bebcf96258d0/f75a4d609d3d34a7-ba/s640x960/397ef2eb12b0750f1dfcecce54ac41ac6299f79e.gif")
     message = await ctx.send(embed=embed)
 
@@ -939,7 +940,7 @@ async def championstats(ctx,region:str,username:str,champion:str,queueId:int):
 
 
 
-    embedVar = discord.Embed(color=EMBED_COLOR,title=queueName+" stats on "+champion)
+    embedVar = discord.Embed(color=EMBED_COLOR,title=champion + " Stats ["+queueName+"]")
     # double dictionary lookup to ensure URL has upper/lowercasing consistent with riots api, regardless of user input
     embedVar.set_thumbnail(url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/champion/"+champion+".png")
     embedVar.set_author(name=username,icon_url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/profileicon/"+str(profileIconId)+".png")
@@ -1092,7 +1093,7 @@ async def duostats(ctx,region:str,username1:str,username2:str,queueId:int):
         return
 
 
-    embedVar = discord.Embed(color=EMBED_COLOR,title=queueName+" Duo Statistics with "+username2)
+    embedVar = discord.Embed(color=EMBED_COLOR,title=username2+" Duo Stats ["+queueName+"]")
     embedVar.set_author(name=username,icon_url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/profileicon/"+str(profileIconId)+".png")
 
     # WR and total games played
@@ -1100,7 +1101,7 @@ async def duostats(ctx,region:str,username1:str,username2:str,queueId:int):
     total_game_count = duo_df['win'].count()
 
     embedVar.add_field(name='Total Games Played',value=str(total_game_count)+'\n ',inline=True)
-    embedVar.add_field(name='Total Winrate',value="{:.2f}".format(wr),inline=True)
+    embedVar.add_field(name='Total Winrate',value="{:.2f}".format(wr*100),inline=True)
 
     # top 5 most played + WR
     # specify Username,champion,role
