@@ -1100,7 +1100,7 @@ async def duostats(ctx,region:str,username1:str,username2:str,queueId:int):
     total_game_count = duo_df['win'].count()
 
     embedVar.add_field(name='Total Games Played',value=str(total_game_count)+'\n ',inline=True)
-    embedVar.add_field(name='Total Winrate',value="{:.2f}".format(wr*100),inline=True)
+    embedVar.add_field(name='Total Winrate',value="{:.2f}%".format(wr*100),inline=True)
 
     # top 5 most played + WR
     # specify Username,champion,role
