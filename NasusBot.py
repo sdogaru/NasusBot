@@ -1,6 +1,6 @@
 import discord
 import os
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 from discord_slash import SlashCommand
 from discord_slash.utils.manage_commands import create_option, create_choice
 
@@ -1426,6 +1426,6 @@ def lane(lane,role):
     else:
         return "SUPPORT"
 
-load_dotenv()
+#load_dotenv()
 BOT_TOKEN = os.environ['BOT_TOKEN']
 client.run(BOT_TOKEN)
