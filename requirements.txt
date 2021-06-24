@@ -9,3 +9,4 @@ more-itertools==7.0.0
 multidict==4.7.6
 plotly==4.13.0
 urllib3==1.24.1
+requests.py
