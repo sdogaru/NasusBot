@@ -29,7 +29,7 @@ import requests
 # MongoDB Atlas
 import pymongo
 
-db_token = os.getenv('DB_TOKEN')
+db_token = os.environ['DB_TOKEN']
 client = pymongo.MongoClient("mongodb+srv://sdogaru:"+db_token+"@matches.vs94y.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
 
 # outdated name for db, but too late to change.
@@ -1427,5 +1427,5 @@ def lane(lane,role):
         return "SUPPORT"
 
 load_dotenv()
-BOT_TOKEN = os.getenv('BOT_TOKEN')
+BOT_TOKEN = os.environ['BOT_TOKEN']
 client.run(BOT_TOKEN)
