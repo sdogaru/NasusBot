@@ -10,5 +10,6 @@ multidict==4.7.6
 plotly==4.13.0
 urllib3==1.24.1
 requests==2.21.0
+numpy==1.16.1
 pandas==0.24.1
 pymongo==3.11.4
