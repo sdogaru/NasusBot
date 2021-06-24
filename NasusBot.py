@@ -22,7 +22,7 @@ from data_dragon import get_champion_json
 
 import datetime
 import pandas as pd
-import numpy
+#import numpy
 import time
 import requests
 
