@@ -29,7 +29,7 @@ import requests
 # MongoDB Atlas
 import pymongo
 
-db_token = os.getenv('DB_TOKEN')
+db_token = os.environ['DB_TOKEN']
 client = pymongo.MongoClient("mongodb+srv://sdogaru:"+db_token+"@matches.vs94y.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
 
 # outdated name for db, but too late to change.
@@ -43,7 +43,6 @@ enabled = True
 
 
 EMBED_COLOR = 0x9932CC
-guild_ids = [722714561136033804]
 
 
 """
@@ -124,7 +123,7 @@ async def on_message(message):
                  option_type=3,
                  required=True
                )
-             ], guild_ids=guild_ids)
+             ])
 async def rank(ctx,username: str,region: str):
     sv4 = Summoner_v4(region)
     lv4 = League_v4(region)
@@ -233,7 +232,7 @@ async def rank(ctx,username: str,region: str):
                  option_type=3,
                  required=True
                )
-             ], guild_ids=guild_ids)
+             ])
 async def flexrank(ctx,username: str, region:str):
     sv4 = Summoner_v4(region)
     lv4 = League_v4(region)
@@ -333,8 +332,8 @@ async def flexrank(ctx,username: str, region:str):
                    name="RU",
                    value="RU"
                  ),
-               ])],
-             guild_ids=guild_ids)
+               ])]
+             )
 async def free(ctx,region:str):
     cv4 = Champion_v3(region)
     free_champions = cv4.get_free_champion_ids()
@@ -361,7 +360,7 @@ async def free(ctx,region:str):
                 required=True
                 )
              ],
-             guild_ids=guild_ids)
+             )
 async def tips(ctx,champion:str):
     # check that champion input is valid
     if champion.lower() not in CHAMPION_NAME_TO_ID:
@@ -405,8 +404,8 @@ async def tips(ctx,champion:str):
                 option_type=3,
                 required=True
                 )
-             ],
-             guild_ids=guild_ids)
+             ]
+            )
 async def abilities(ctx,champion:str):
     # check that champion input is valid
     if champion.lower() not in CHAMPION_NAME_TO_ID:
@@ -458,8 +457,8 @@ async def abilities(ctx,champion:str):
                 option_type=3,
                 required=True
                 )
-             ],
-             guild_ids=guild_ids)
+             ]
+             )
 async def lore(ctx,champion:str):
     # check that champion input is valid
     if champion.lower() not in CHAMPION_NAME_TO_ID:
@@ -538,7 +537,7 @@ async def lore(ctx,champion:str):
                  description="Summoner Name",
                  option_type=3,
                  required=True
-               )],guild_ids=guild_ids)
+               )])
 async def livegame(ctx, username:str,region:str):
     spv4 = Spectator_v4(region)
     sv4 = Summoner_v4(region)
@@ -666,7 +665,7 @@ async def livegame(ctx, username:str,region:str):
                   ),
                 ]),
                create_option(name="username",description="Summoner Name",option_type=3,required=True),
-               create_option(name="champion",description="Name of the champion",option_type=3,required=True)],guild_ids=guild_ids)
+               create_option(name="champion",description="Name of the champion",option_type=3,required=True)])
 async def mastery(ctx, username:str,champion:str,region:str):
     embed = discord.Embed(color=EMBED_COLOR,title="Fetching mastery data...")
     embed.set_image(url="https://64.media.tumblr.com/e59ffcaa310835f2b207bebcf96258d0/f75a4d609d3d34a7-ba/s640x960/397ef2eb12b0750f1dfcecce54ac41ac6299f79e.gif")
@@ -767,7 +766,7 @@ async def mastery(ctx, username:str,champion:str,region:str):
                  description="Summoner Name",
                  option_type=3,
                  required=True
-               )],guild_ids=guild_ids)
+               )])
 async def topmastery(ctx,username:str,region:str):
     embed = discord.Embed(color=EMBED_COLOR,title="Fetching mastery data...")
     embed.set_image(url="https://64.media.tumblr.com/e59ffcaa310835f2b207bebcf96258d0/f75a4d609d3d34a7-ba/s640x960/397ef2eb12b0750f1dfcecce54ac41ac6299f79e.gif")
@@ -886,7 +885,7 @@ async def topmastery(ctx,username:str,region:str):
                     value=0
                   )
                 ])
-               ],guild_ids=guild_ids)
+               ])
 async def championstats(ctx,region:str,username:str,champion:str,queueId:int):
     embed = discord.Embed(color=EMBED_COLOR,title="Fetching newest data...")
     embed.set_image(url="https://64.media.tumblr.com/e59ffcaa310835f2b207bebcf96258d0/f75a4d609d3d34a7-ba/s640x960/397ef2eb12b0750f1dfcecce54ac41ac6299f79e.gif")
@@ -1034,7 +1033,7 @@ async def championstats(ctx,region:str,username:str,champion:str,queueId:int):
                     value=0
                   )
                 ])
-               ],guild_ids=guild_ids)
+               ])
 async def duostats(ctx,region:str,username1:str,username2:str,queueId:int):
     embed = discord.Embed(color=EMBED_COLOR,title="Fetching newest data...")
     embed.set_image(url="https://64.media.tumblr.com/e59ffcaa310835f2b207bebcf96258d0/f75a4d609d3d34a7-ba/s640x960/397ef2eb12b0750f1dfcecce54ac41ac6299f79e.gif")
@@ -1209,7 +1208,7 @@ async def duostats(ctx,region:str,username1:str,username2:str,queueId:int):
                     value=0
                   )
                 ])
-               ],guild_ids=guild_ids)
+               ])
 async def mostplayed(ctx,region:str,username:str,queueId:int):
     embed = discord.Embed(color=EMBED_COLOR,title="Fetching newest data...")
     embed.set_image(url="https://64.media.tumblr.com/e59ffcaa310835f2b207bebcf96258d0/f75a4d609d3d34a7-ba/s640x960/397ef2eb12b0750f1dfcecce54ac41ac6299f79e.gif")
@@ -1428,5 +1427,5 @@ def lane(lane,role):
         return "SUPPORT"
 
 load_dotenv()
-BOT_TOKEN = os.getenv('BOT_TOKEN')
+BOT_TOKEN = os.environ['BOT_TOKEN']
 client.run(BOT_TOKEN)

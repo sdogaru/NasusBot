@@ -6,7 +6,7 @@ import time
 
 # use .env file to load secret api key
 load_dotenv()
-API_KEY = os.getenv('API_KEY')
+API_KEY = os.environ['API_KEY']
 
 PLATFORM_ROUTING = {"BR":	"br1.api.riotgames.com",
     "EUNE":	"eun1.api.riotgames.com",
