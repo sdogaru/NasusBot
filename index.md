@@ -1,14 +1,4 @@
 ## Commands:
-#### /rank [region] [username] 
-- Get a user's soloqueue rank, lp and winrate.
-
-![/rank](images/rank.PNG)
-
-#### /flexrank [region] [username]
-- Get a user's 5x5 flex rank, lp and winrate.
-
-![/flexrank](images/flexrank.PNG)
-
 #### /championstats [region] [username] [champion] [queue]
 - View a user's cs, kda, winrate on a specified champion and queue.
 
@@ -25,6 +15,16 @@
 - View a user's top 10 most played champions + stats for a selected game queue.
 
 ![/mostplayed](images/mostplayed.PNG)
+
+#### /rank [region] [username] 
+- Get a user's soloqueue rank, lp and winrate.
+
+![/rank](images/rank.PNG)
+
+#### /flexrank [region] [username]
+- Get a user's 5x5 flex rank, lp and winrate.
+
+![/flexrank](images/flexrank.PNG)
 
 #### /mastery [region] [username] [champion]
 - View a user's mastery level on a specified champion.
