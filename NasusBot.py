@@ -30,7 +30,7 @@ import requests
 import pymongo
 
 db_token = os.environ['DB_TOKEN']
-client = pymongo.MongoClient("mongodb+srv://sdogaru:"+db_token+"@matches.vs94y.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
+client = pymongo.MongoClient(os.environ['DB_PREFIX']+db_token+os.environ['DB_SUFFIX'])
 
 # outdated name for db, but too late to change.
 db = client.AhriBot
