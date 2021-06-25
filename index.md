@@ -1,4 +1,4 @@
-## Commands:
+## Commands:ssssssss
 #### /rank [region] [username] 
 - Get a user's soloqueue rank, lp and winrate.
 
