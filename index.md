@@ -1,5 +1,3 @@
-## **[Invite NasusBot to your Discord server](https://discord.com/api/oauth2/authorize?client_id=722716317160833114&permissions=2148005952&scope=bot%20applications.commands)**
-
 ## Commands:
 #### /rank [region] [username] 
 - Get a user's soloqueue rank, lp and winrate.
