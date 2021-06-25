@@ -1,37 +1,67 @@
-## Welcome to GitHub Pages
+# NasusBot
+A Discord bot that enhances the League of Legends gaming experience by providing in-depth statistics, gameplay information and more.
 
-You can use the [editor on GitHub](https://github.com/sdogaru/NasusBot/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+You can add NasusBot to your own Discord server by using this link: https://discord.com/api/oauth2/authorize?client_id=722716317160833114&permissions=2148005952&scope=bot%20applications.commands
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+## Commands:
+#### /rank [region] [username] 
+- Get a user's soloqueue rank, lp and winrate.
 
-### Markdown
+![/rank](images/rank.PNG)
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+#### /flexrank [region] [username]
+- Get a user's 5x5 flex rank, lp and winrate.
 
-```markdown
-Syntax highlighted code block
+![/flexrank](images/flexrank.PNG)
 
-# Header 1
-## Header 2
-### Header 3
+#### /championstats [region] [username] [champion] [queue]
+- View a user's cs, kda, winrate on a specified champion and queue.
 
-- Bulleted
-- List
+![/championstats](images/championstats.PNG)
 
-1. Numbered
-2. List
+#### /duostats [region] [user1] [user2] [queue]
+- Get two player's duo winrate + total games played together for current season
+- Also displays the duo's 10 most-played pairing(s) and winrate
 
-**Bold** and _Italic_ and `Code` text
 
-[Link](url) and ![Image](src)
-```
+![/duostats](images/duostats.PNG)
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+#### /mostplayed [region] [username] [queue]
+- View a user's top 10 most played champions + stats for a selected game queue.
 
-### Jekyll Themes
+![/mostplayed](images/mostplayed.PNG)
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/sdogaru/NasusBot/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+#### /mastery [region] [username] [champion]
+- View a user's mastery level on a specified champion.
 
-### Support or Contact
+![/mastery](images/mastery.PNG)
 
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+#### /topmastery [region] [username]
+- Display a user's top 10 champions, by total mastery points.
+
+![/topmastery](images/topmastery.PNG)
+
+#### /livegame [region] [username]
+- Display live game info if specified user is currently in game.
+
+![/livegame](images/livegame.PNG)
+
+#### /tips [champion]
+- Get tips for playing with, and against, a champion 
+
+![/tips](images/tips.PNG)
+
+#### /abilities [champion]
+- Get a formated message containing champion description, abilities etc.
+
+![/abilities](images/abilities.PNG)
+
+#### /lore [champion]
+- Read up on a champion's lore/background
+
+![/lore](images/lore.PNG)
+
+#### /free [region]
+- View the free champion rotation for the current week.
+
+![/free](images/free.PNG)
