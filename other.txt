@@ -1,22 +1,11 @@
-Advanced Statistics Pathway:
 QUESTIONS:
 
-- figure out hosting
--- was able to use pipreqs to generate a requirements.txt,everything should be good on heroku if solve the pandas issues w/ buildpack https://elements.heroku.com/buildpacks/pandas-dev/pandas#buildpack-instructions
-
-
-- apply for rate limit increase + change name to nasus bot
--- give description of the bot
--- make github public and refer them to that for command list
--- explain need for rate limit expansion, how im using mongodb atlas already, where the ratelimit bottleneck is, etc.
---- Ex. Getting match data for the first time, for a player whos played 500 games this season, the current rate limit of 100 req every 2 min would take 10+ minutes. Since the matches are stored in a database, subsequent calls would take mere seconds, with hardly any requests made to the riot games api.   
-
--- provide with options to either join the testing server, or download on their own
 - when approved, publish to top.gg and other bot sites
 - performance tweaks to minimize # of requests
 - add comments
 - get matchv5 ready
 - lee sin, j4, wukong, all have weird names and need a mapping
+-- kai'sa //rek'sai as well.
 -sharding? https://anidiots.guide/understanding/sharding
 -- sharding not reccomended until 2500+ guilds
 
@@ -25,6 +14,6 @@ REFACTOR CODE AND ADD DB
 - transition to matchv5 api once they open to production keys.
 noget match list dto in matchv5 :( so some code change will be necessary.
 
-mongodb atlas is 512 mb (500k-1m entries). Can switch to local for unlimited space...
+mongodb atlas is 512 mb (500k-1m matches)Can switch to local for unlimited space...
 
 https://www.reddit.com/r/leagueoflegends/comments/naa7ut/i_was_tired_of_spending_thousands_of_hours/

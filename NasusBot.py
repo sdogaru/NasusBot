@@ -574,12 +574,19 @@ async def livegame(ctx, username:str,region:str):
             return
         else:
             # filter on gamequeue
-            rank_str = ""
-            if QUEUE_ID_TO_NAME[CurrentGameInfo['gameQueueConfigId']] == "5v5 Ranked Solo games":
-                rank_str = [i['tier']+" "+i['rank'] for i in leagueEntryDTOs if i['queueType'] == "RANKED_SOLO_5x5"][0]
+            if QUEUE_ID_TO_NAME[CurrentGameInfo['gameQueueConfigId']] == "5v5 Ranked Flex games":
+                target_queue = [i for i in leagueEntryDTOs if i['queueType'] == "RANKED_FLEX_SR"]
+                if len(target_queue) == 0:
+                    blue_team_ranks[i] = "UNRANKED"
+                else:
+                    blue_team_ranks[i] = target_queue[0]['tier']+" "+target_queue[0]['rank']
             else:
-                rank_str = [i['tier']+" "+i['rank'] for i in leagueEntryDTOs if i['queueType'] == "RANKED_FLEX_SR"][0]
-            blue_team_ranks[i] = rank_str
+                target_queue = [i for i in leagueEntryDTOs if i['queueType'] == "RANKED_SOLO_5x5"]
+                if len(target_queue) == 0:
+                    blue_team_ranks[i] = "UNRANKED"
+                else:
+                    blue_team_ranks[i] = target_queue[0]['tier']+" "+target_queue[0]['rank']
+
 
     red_team_users = [i['summonerId'] for i in participants if i['teamId'] == RED_TEAM_ID]
     red_team_ranks = {}
@@ -591,12 +598,18 @@ async def livegame(ctx, username:str,region:str):
             return
         else:
             # filter on gamequeue
-            rank_str = ""
-            if QUEUE_ID_TO_NAME[CurrentGameInfo['gameQueueConfigId']] == "5v5 Ranked Solo games":
-                rank_str = [i['tier']+" "+i['rank'] for i in leagueEntryDTOs if i['queueType'] == "RANKED_SOLO_5x5"][0]
+            if QUEUE_ID_TO_NAME[CurrentGameInfo['gameQueueConfigId']] == "5v5 Ranked Flex games":
+                target_queue = [i for i in leagueEntryDTOs if i['queueType'] == "RANKED_FLEX_SR"]
+                if len(target_queue) == 0:
+                    red_team_ranks[i] = "UNRANKED"
+                else:
+                    red_team_ranks[i] = target_queue[0]['tier']+" "+target_queue[0]['rank']
             else:
-                rank_str = [i['tier']+" "+i['rank'] for i in leagueEntryDTOs if i['queueType'] == "RANKED_FLEX_SR"][0]
-            red_team_ranks[i] = rank_str
+                target_queue = [i for i in leagueEntryDTOs if i['queueType'] == "RANKED_SOLO_5x5"]
+                if len(target_queue) == 0:
+                    red_team_ranks[i] = "UNRANKED"
+                else:
+                    red_team_ranks[i] = target_queue[0]['tier']+" "+target_queue[0]['rank']
 
 
 
