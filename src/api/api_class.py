@@ -54,7 +54,7 @@ class Api():
                 response = requests.get(url)
 
             if response.status_code != 200:
-                print(response.status_code)
+                print("RIOT API RETURNED STATUS CODE: " + str(response.status_code))
                 raise Exception()
 
         #request fail case
