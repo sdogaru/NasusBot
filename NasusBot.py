@@ -33,7 +33,7 @@ db_token = os.environ['DB_TOKEN']
 client = pymongo.MongoClient(os.environ['DB_PREFIX']+db_token+os.environ['DB_SUFFIX'])
 
 # outdated name for db, but too late to change.
-db = client.AhriBot
+db = client.NasusBot
 
 intents = discord.Intents(messages=True, guilds=True)
 client = discord.Client(intents=intents)
@@ -1312,7 +1312,7 @@ def get_matches_from_db(encryptedAccountID,mv,sv4):
 
     # find timestamp for most recent game stored in db. Only request riot api for
     # games that occured after this timestamp
-    mostRecentGame =  db.matches.find({'accountId':accountId}).sort("timestamp",-1)
+    mostRecentGame = db.matches.find({'accountId':accountId}).sort("timestamp",-1)
     mostRecentTimestamp = None
     if db.matches.count_documents({'accountId':accountId}) != 0:
         mostRecentTimestamp = mostRecentGame[0]['timestamp']
