@@ -12,7 +12,7 @@ class Test_summoner_v4(unittest.TestCase):
         if result == -1:
             assert False, "Response code != 200"
 
-        self.assertEqual(result,"oCwWLVEdQEKEEpo2NciVKqjjvRtgoGtFiw6L5OgMpe1q27Q")
+        self.assertEqual(result,"pYRKtrHI8ZH7627I-BUjzrGBRoKPC2XekyqL1U_qK5G7Fzk")
 
     # invalid username case
     def test_bad_username_to_encryptedAccountID(self):
@@ -26,7 +26,7 @@ class Test_summoner_v4(unittest.TestCase):
         if result == -1:
             assert False, "Response code != 200"
 
-        self.assertEqual(result,"JLzDAXZ89AGuYb1Std1IF_PJ5wqs1WORI4URcV6fbq7mEQY")
+        self.assertEqual(result,"plTojZbQDi0rL3fwj0SI8cvdcYLX9sQA-1ZvaKF6gpBguMc")
 
     # invalid username case
     def test_bad_username_to_encryptedSummonerID(self):
@@ -70,7 +70,7 @@ class Test_summoner_v4(unittest.TestCase):
         if result == -1:
             assert False, "Response code != 200"
 
-        self.assertEqual(result,"e3eRV-PsBh0hTqsW5cedfsR1qyJpXKaoGwqD_uM9jAlov2z9s8JZFUSbCRkDaYmLucARCzIicIB0gA")
+        self.assertEqual(result,"lTCVM2bkGEF7oKLudGVq-pkOmmMNirbUpC1Rbsoh04I95QW0d9LuHYTxRQz_obPDc22lcGnDHcR3qw")
 
 if __name__ == '__main__':
     unittest.main()

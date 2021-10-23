@@ -7,7 +7,7 @@ from src.api.champion_mastery_v4 import Champion_mastery_v4
 class Test_champion_mastery_v4(unittest.TestCase):
     def test_get_full_championHistory(self):
         cmv4 = Champion_mastery_v4("NA")
-        result = cmv4.get_all_champion_mastery("JLzDAXZ89AGuYb1Std1IF_PJ5wqs1WORI4URcV6fbq7mEQY")
+        result = cmv4.get_all_champion_mastery("plTojZbQDi0rL3fwj0SI8cvdcYLX9sQA-1ZvaKF6gpBguMc")
         if result == -1:
             assert False, "Response code != 200"
 
@@ -19,7 +19,7 @@ class Test_champion_mastery_v4(unittest.TestCase):
         cmv4 = Champion_mastery_v4("NA")
 
         #look up lux mastery on my personal acc
-        result = cmv4.get_individual_champion_mastery("JLzDAXZ89AGuYb1Std1IF_PJ5wqs1WORI4URcV6fbq7mEQY",99)
+        result = cmv4.get_individual_champion_mastery("plTojZbQDi0rL3fwj0SI8cvdcYLX9sQA-1ZvaKF6gpBguMc",99)
         if result == -1:
             assert False, "Response code != 200"
 
@@ -30,7 +30,7 @@ class Test_champion_mastery_v4(unittest.TestCase):
     def test_get_total_mastery_score(self):
         cmv4 = Champion_mastery_v4("NA")
         # test for my personal acc total mastery
-        result = cmv4.get_total_mastery_score("JLzDAXZ89AGuYb1Std1IF_PJ5wqs1WORI4URcV6fbq7mEQY")
+        result = cmv4.get_total_mastery_score("plTojZbQDi0rL3fwj0SI8cvdcYLX9sQA-1ZvaKF6gpBguMc")
         if result == -1:
             assert False, "Response code != 200"
         # my personal acc total mastery is >= 190
