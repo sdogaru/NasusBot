@@ -1,6 +1,14 @@
 # NasusBot
 A Discord bot that enhances the League of Legends gaming experience by providing in-depth statistics, gameplay information and more.
 
+# Technologies Used
+- Python
+- MongoDB Atlas
+- Riot Games API
+- Discord.py
+- Modules such as Unittest/Pandas/Requests
+- Heroku
+
 ## Commands:
 #### /rank [region] [username] 
 - Get a user's soloqueue rank, lp and winrate.
