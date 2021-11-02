@@ -11,7 +11,7 @@ Recently approved for production and granted a production API key by Riot Games.
 - Modules such as Unittest/Pandas/Requests
 - Heroku
 
-## Commands:
+## Commands + Example Outputs:
 #### /rank [region] [username] 
 - Get a user's soloqueue rank, lp and winrate.
 
