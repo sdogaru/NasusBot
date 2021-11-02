@@ -1,6 +1,8 @@
 # NasusBot
 A Discord bot that enhances the League of Legends gaming experience by providing in-depth statistics, gameplay information and more.
 
+Recently approved for production and granted a production API key by Riot Games. Still only available for private use while logistics are being figured out, but will be deploying publically soon
+
 # Technologies Used
 - Python
 - MongoDB Atlas
