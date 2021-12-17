@@ -19,5 +19,18 @@ class Test_match_v5(unittest.TestCase):
 
         self.assertTrue(len(result) == 20)
 
+    def test_get_match(self):
+        mv5 = Match_v5("NA")
+        result = mv5.get_match('NA1_4137828491')
+
+        if result == -1:
+            assert False, "Response code != 200"
+
+        self.assertTrue(
+            result['gameDuration'] == 1729 and
+            result['gameMode'] == 'ULTBOOK' and
+            result['gameCreation'] == 1639378901000
+        )
+
 if __name__ == '__main__':
     unittest.main()

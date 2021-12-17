@@ -24,6 +24,18 @@ REGION_ROUTING = {"AMERICAS":"americas.api.riotgames.com",
 "ASIA":	"asia.api.riotgames.com",
 "EUROPE":"europe.api.riotgames.com"}
 
+PLATFORM_TO_REGION = {"BR":	"AMERICAS",
+    "EUNE":	"EUROPE",
+    "EUW":	"EUROPE",
+    "JP":"ASIA",
+    "KR":"ASIA",
+    "LAN":"AMERICAS",
+    "LAS":"AMERICAS",
+    "NA":"AMERICAS",
+    "OCE":"AMERICAS",
+    "TR":"EUROPE",
+    "RU":"EUROPE"}
+
 
 """
    Template class for all the different api classes
@@ -31,12 +43,12 @@ REGION_ROUTING = {"AMERICAS":"americas.api.riotgames.com",
    API Key and base url for riot api
 """
 class Api():
-    def __init__(self,platform,region=None):
+    def __init__(self,platform,region=False):
         self.api_key = API_KEY
-        if region == None:
+        if region == False:
             self.base_url = "https://"+PLATFORM_ROUTING[platform]+"/lol/"
         else:
-            self.base_url = "https://"+REGION_ROUTING[region]+"/lol/"
+            self.base_url = "https://"+REGION_ROUTING[PLATFORM_TO_REGION[platform]]+"/lol/"
 
     """Riot API request handler to be used by all subclasses in their calls"""
     def make_api_request(self,url):

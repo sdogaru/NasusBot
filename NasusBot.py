@@ -8,7 +8,7 @@ from src.api.summoner_v4 import Summoner_v4
 from src.api.league_v4 import League_v4
 from src.api.champion_v3 import Champion_v3
 from src.api.spectator_v4 import Spectator_v4
-from src.api.match_v4 import Match_v4
+from src.api.match_v5 import Match_v5
 from src.api.champion_mastery_v4 import Champion_mastery_v4
 
 from data_dragon import CHAMPION_ID_TO_NAME
@@ -40,8 +40,6 @@ client = discord.Client(intents=intents)
 slash = SlashCommand(client, sync_commands=True) # Declares slash commands through the client.
 enabled = True
 EMBED_COLOR = 0x9932CC
-BOT_TOKEN = os.environ['BOT_TOKEN']
-client.run(BOT_TOKEN)
 
 """
 When the bot is added to a server, send a gif in chat to introduce
@@ -330,7 +328,8 @@ async def flexrank(ctx,username: str, region:str):
                    name="RU",
                    value="RU"
                  ),
-               ])]
+               ])],
+               guild_ids=[857482088118222859]
              )
 async def free(ctx,region:str):
     cv4 = Champion_v3(region)
@@ -896,14 +895,15 @@ async def topmastery(ctx,username:str,region:str):
                     value=0
                   )
                 ])
-               ])
+               ],
+               guild_ids=[857482088118222859])
 async def championstats(ctx,region:str,username:str,champion:str,queueId:int):
     embed = discord.Embed(color=EMBED_COLOR,title="Fetching newest data...")
     embed.set_image(url="https://64.media.tumblr.com/e59ffcaa310835f2b207bebcf96258d0/f75a4d609d3d34a7-ba/s640x960/397ef2eb12b0750f1dfcecce54ac41ac6299f79e.gif")
     message = await ctx.send(embed=embed)
 
     sv4 = Summoner_v4(region)
-    mv4 = Match_v4(region)
+    mv5 = Match_v5(region)
 
     encryptedAccountID = sv4.username_to_encryptedAccountID(username)
     profileIconId = sv4.username_to_profileIconId(username)
@@ -921,7 +921,7 @@ async def championstats(ctx,region:str,username:str,champion:str,queueId:int):
     champion = CHAMPION_ID_TO_NAME[CHAMPION_NAME_TO_ID[champion.lower()]]
 
     # display loading gif while data is retrieved
-    rdf = get_matches_from_db(encryptedAccountID,mv4,sv4)
+    rdf = get_matches_from_db(encryptedAccountID,mv5,sv4)
     if len(rdf) == 0:
         error_embed = discord.Embed(color=EMBED_COLOR,title=f"" + "Could not find current season match data for "+username)
         await message.edit(content="",embed=error_embed)
@@ -1051,7 +1051,7 @@ async def duostats(ctx,region:str,username1:str,username2:str,queueId:int):
     message = await ctx.send(embed=embed)
 
     sv4 = Summoner_v4(region)
-    mv4 = Match_v4(region)
+    mv5 = Match_v5(region)
 
     encryptedAccountID = sv4.username_to_encryptedAccountID(username1)
     profileIconId = sv4.username_to_profileIconId(username1)
@@ -1075,8 +1075,8 @@ async def duostats(ctx,region:str,username1:str,username2:str,queueId:int):
     queueName = get_queue_name(queueId)
 
     # get match history for both users, then inner join on common games
-    df1 = get_matches_from_db(encryptedAccountID,mv4,sv4)
-    df2 = get_matches_from_db(duo_encryptedAccountID,mv4,sv4)
+    df1 = get_matches_from_db(encryptedAccountID,mv5,sv4)
+    df2 = get_matches_from_db(duo_encryptedAccountID,mv5,sv4)
 
     # no match history edge case
     if len(df1) == 0:
@@ -1226,7 +1226,7 @@ async def mostplayed(ctx,region:str,username:str,queueId:int):
     message = await ctx.send(embed=embed)
 
     sv4 = Summoner_v4(region)
-    mv4 = Match_v4(region)
+    mv5 = Match_v5(region)
 
     encryptedAccountID = sv4.username_to_encryptedAccountID(username)
     profileIconId = sv4.username_to_profileIconId(username)
@@ -1237,7 +1237,7 @@ async def mostplayed(ctx,region:str,username:str,queueId:int):
     username = sv4.username_to_username(username)
 
     # get match data from database
-    df = get_matches_from_db(encryptedAccountID,mv4,sv4)
+    df = get_matches_from_db(encryptedAccountID,mv5,sv4)
     if len(df) == 0:
         error_embed = discord.Embed(color=EMBED_COLOR,title=f"" + "Could not find current season match data for "+username)
         await message.edit(content="",embed=error_embed)
@@ -1300,40 +1300,39 @@ def get_matches_from_db(encryptedAccountID,mv,sv4):
     date = datetime.datetime(year, 1, 1)
     NEW_YEAR_TIME_STAMP = date.timestamp()
 
-    # request accountId and check for valid response
-    accountId = encryptedAccountID
+    # request username and check for valid response
     username = sv4.encryptedAccountID_to_username(encryptedAccountID)
+    puuid = sv4.username_to_puuid(username)
     total = 0
     beginIndex= 0
-    endIndex=100
     objects = []
 
     # find timestamp for most recent game stored in db. Only request riot api for
     # games that occured after this timestamp
-    mostRecentGame = db.matches.find({'accountId':accountId}).sort("timestamp",-1)
+    mostRecentGame = db.matches.find({'puuid':puuid}).sort("timestamp",-1)
     mostRecentTimestamp = None
-    if db.matches.count_documents({'accountId':accountId}) != 0:
+    if db.matches.count_documents({'puuid':puuid}) != 0:
         mostRecentTimestamp = mostRecentGame[0]['timestamp']
 
-    loop = True
-    while loop:
+    while True:
         #get match list for 100 game window (max allowed by riot api) and check for valid response
-        d = mv.get_match_list(accountId,beginIndex=beginIndex,endIndex=endIndex)
+        matchList = mv.get_match_list(puuid,start=beginIndex,count=100)
+
         #check if d == -1
-        if d == -1:
+        if matchList == -1:
             # DISCORD MESSAGE HERE
             print("Could not retrieve match data for "+username)
             return pd.DataFrame()
-
+        elif len(matchList) == 0:
+            break
 
         #get list of matchDtos from api response d
-        matchList = d['matches']
-        for i in matchList:
+        for id in matchList:
             # MAKE REQUEST GETMATCH and check for valid response
-            match = mv.get_match(i['gameId'])
+            match = mv.get_match(id)
+
             if match == -1:
                 if len(objects) > 0:
-                    loop = False
                     break
                 else:
                     return pd.DataFrame()
@@ -1341,7 +1340,6 @@ def get_matches_from_db(encryptedAccountID,mv,sv4):
 
             # only process matches in current season (year)
             if match['gameCreation']/1000 <= NEW_YEAR_TIME_STAMP: #conversion from ms to s
-                loop = False
                 break
 
             #exclude remake case (disconnected game less than 240 seconds)
@@ -1350,51 +1348,44 @@ def get_matches_from_db(encryptedAccountID,mv,sv4):
 
             # only request matches from riot api for matches not in db
             if mostRecentTimestamp != None and match['gameCreation'] <= mostRecentTimestamp:
-                loop = False
                 break
             else:
-                #find participantId for username- participantId is used to identify a user's game stats
-                numPlayers = 10
-                participantInfo = match['participantIdentities']
-                participantId = 0
-                for j in participantInfo:
-                    if j['player']['accountId'] == accountId:
-                        participantId = j['participantId']
+                player_stats = None
+                for j in match['participants']:
+                    if j['puuid'] == puuid:
+                        player_stats = j
 
-                # riot uses 1 based indexing for array of participantstats
-                participantStats = match['participants'][participantId-1]['stats']
                 d = {
-                    "accountId":accountId,
+                    "puuid":puuid,
                     "username":username,
-                    "gameId":match['gameId'],
+                    "gameId":id,
                     "queueId":match['queueId'],
-                    "championId":match['participants'][participantId-1]['championId'],
-                    "championName":CHAMPION_ID_TO_NAME[match['participants'][participantId-1]['championId']],
-                    "lane":match['participants'][participantId-1]['timeline']['lane'],
-                    "role":match['participants'][participantId-1]['timeline']['role'],
+                    "championId":player_stats['championId'],
+                    "championName":CHAMPION_ID_TO_NAME[player_stats['championId']],
+                    "lane":player_stats['lane'],
+                    "role":player_stats['role'],
                     "timestamp":match['gameCreation'],
-                    "CS":participantStats['totalMinionsKilled']+participantStats['neutralMinionsKilled'],
-                    "CS/min":(participantStats['totalMinionsKilled']+participantStats['neutralMinionsKilled'] )/(match['gameDuration']/60),
-                    "kills":participantStats['kills'],
-                    "deaths":participantStats['deaths'],
-                    "assists":participantStats['assists'],
-                    "goldEarned":participantStats['goldEarned'],
-                    "totalDamageDealtToChampions":participantStats['totalDamageDealtToChampions'],
-                    "damageDealtToObjectives":participantStats['damageDealtToObjectives'],
-                    "totalDamageTaken":participantStats['totalDamageTaken'],
-                    "firstBlood":participantStats['firstBloodKill'],
-                    "firstBloodAssist":participantStats['firstBloodAssist'],
-                    "win":participantStats['win']
+                    "CS":player_stats['totalMinionsKilled']+player_stats['neutralMinionsKilled'],
+                    "CS/min":(player_stats['totalMinionsKilled']+player_stats['neutralMinionsKilled'] )/(player_stats['timePlayed']/60),
+                    "kills":player_stats['kills'],
+                    "deaths":player_stats['deaths'],
+                    "assists":player_stats['assists'],
+                    "goldEarned":player_stats['goldEarned'],
+                    "totalDamageDealtToChampions":player_stats['totalDamageDealtToChampions'],
+                    "damageDealtToObjectives":player_stats['damageDealtToObjectives'],
+                    "totalDamageTaken":player_stats['totalDamageTaken'],
+                    "firstBlood":player_stats['firstBloodKill'],
+                    "firstBloodAssist":player_stats['firstBloodAssist'],
+                    "win":player_stats['win']
                 }
                 objects.append(d)
 
         beginIndex += 100
-        endIndex += 100
 
     if len(objects)>0:
         db.matches.insert_many(objects)
 
-    df = pd.DataFrame(list(db.matches.find({'accountId':accountId})))
+    df = pd.DataFrame(list(db.matches.find({'puuid':puuid})))
     return df
 
 
@@ -1436,3 +1427,6 @@ def lane(lane,role):
         return "ADC"
     else:
         return "SUPPORT"
+
+BOT_TOKEN = os.environ['BOT_TOKEN']
+client.run(BOT_TOKEN)
