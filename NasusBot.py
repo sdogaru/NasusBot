@@ -26,24 +26,22 @@ import numpy
 import time
 import requests
 
+#.env os variables
+load_dotenv()
+
 # MongoDB Atlas
 import pymongo
-
-db_token = os.environ['DB_TOKEN']
-client = pymongo.MongoClient(os.environ['DB_PREFIX']+db_token+os.environ['DB_SUFFIX'])
-
-# outdated name for db, but too late to change.
+client = pymongo.MongoClient(os.environ['DB_PREFIX']+os.environ['DB_TOKEN']+os.environ['DB_SUFFIX'])
 db = client.NasusBot
 
+# Discord.py / slash commands
 intents = discord.Intents(messages=True, guilds=True)
 client = discord.Client(intents=intents)
 slash = SlashCommand(client, sync_commands=True) # Declares slash commands through the client.
-
 enabled = True
-
-
 EMBED_COLOR = 0x9932CC
-
+BOT_TOKEN = os.environ['BOT_TOKEN']
+client.run(BOT_TOKEN)
 
 """
 When the bot is added to a server, send a gif in chat to introduce
@@ -1438,7 +1436,3 @@ def lane(lane,role):
         return "ADC"
     else:
         return "SUPPORT"
-
-load_dotenv()
-BOT_TOKEN = os.environ['BOT_TOKEN']
-client.run(BOT_TOKEN)

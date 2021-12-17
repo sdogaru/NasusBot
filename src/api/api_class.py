@@ -31,9 +31,12 @@ REGION_ROUTING = {"AMERICAS":"americas.api.riotgames.com",
    API Key and base url for riot api
 """
 class Api():
-    def __init__(self,region):
+    def __init__(self,platform,region=None):
         self.api_key = API_KEY
-        self.base_url = "https://"+PLATFORM_ROUTING[region]+"/lol/"
+        if region == None:
+            self.base_url = "https://"+PLATFORM_ROUTING[platform]+"/lol/"
+        else:
+            self.base_url = "https://"+REGION_ROUTING[region]+"/lol/"
 
     """Riot API request handler to be used by all subclasses in their calls"""
     def make_api_request(self,url):
@@ -44,6 +47,7 @@ class Api():
             # if 504, try again
             if response.status_code == 504 or response.status_code == 503:
                 print("504/503, trying again here.")
+                time.sleep(5)
                 response = requests.get(url)
 
             if response.status_code == 429:
