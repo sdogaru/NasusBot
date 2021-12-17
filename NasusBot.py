@@ -328,8 +328,7 @@ async def flexrank(ctx,username: str, region:str):
                    name="RU",
                    value="RU"
                  ),
-               ])],
-               guild_ids=[857482088118222859]
+               ])]
              )
 async def free(ctx,region:str):
     cv4 = Champion_v3(region)
@@ -895,8 +894,7 @@ async def topmastery(ctx,username:str,region:str):
                     value=0
                   )
                 ])
-               ],
-               guild_ids=[857482088118222859])
+               ])
 async def championstats(ctx,region:str,username:str,champion:str,queueId:int):
     embed = discord.Embed(color=EMBED_COLOR,title="Fetching newest data...")
     embed.set_image(url="https://64.media.tumblr.com/e59ffcaa310835f2b207bebcf96258d0/f75a4d609d3d34a7-ba/s640x960/397ef2eb12b0750f1dfcecce54ac41ac6299f79e.gif")
