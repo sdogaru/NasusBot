@@ -18,6 +18,7 @@ from data_dragon import QUEUE_NAME_TO_ID
 from data_dragon import MAP_ID_TO_NAME
 from data_dragon import BLUE_TEAM_ID,RED_TEAM_ID
 from data_dragon import get_champion_json
+from data_dragon import DD_BASE_URL
 
 
 import datetime
@@ -164,7 +165,7 @@ async def rank(ctx,username: str,region: str):
             embedVar = discord.Embed(color=EMBED_COLOR)
             embedVar.set_thumbnail(url="attachment://"+tier+".png")
 
-            embedVar.set_author(name=username,icon_url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/profileicon/"+str(profileIconId)+".png")
+            embedVar.set_author(name=username,icon_url=DD_BASE_URL+"/img/profileicon/"+str(profileIconId)+".png")
 
             embedVar.add_field(name="Solo/Duo Rank", value=tier+" "+rank+" "+lp +" LP", inline=False)
             embedVar.add_field(name="Winrate", value=winrate+"% ("+wins+"W  "+losses+ "L)",inline=False)
@@ -273,7 +274,7 @@ async def flexrank(ctx,username: str, region:str):
             file = discord.File("images/"+tier+".png",filename=tier+".png")
             embedVar = discord.Embed(color=EMBED_COLOR)
             embedVar.set_thumbnail(url="attachment://"+tier+".png")
-            embedVar.set_author(name=username,icon_url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/profileicon/"+str(profileIconId)+".png")
+            embedVar.set_author(name=username,icon_url=DD_BASE_URL+"/img/profileicon/"+str(profileIconId)+".png")
             embedVar.add_field(name="5x5 Flex Rank", value=tier+" "+rank+" "+lp +" LP", inline=False)
             embedVar.add_field(name="Winrate", value=winrate+"% ("+wins+"W  "+losses+ "L)",inline=False)
             # display users rank in embed message
@@ -372,7 +373,7 @@ async def tips(ctx,champion:str):
         return
 
     embedVar = discord.Embed(color=EMBED_COLOR)
-    embedVar.set_thumbnail(url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/champion/"+champion+".png")
+    embedVar.set_thumbnail(url=DD_BASE_URL+"/img/champion/"+champion+".png")
     allytips = "".join([" -- "+i+'\n\n' for i in tips['data'][champion]['allytips']])
     enemytips = "".join([" -- "+i+'\n\n' for i in tips['data'][champion]['enemytips']])
 
@@ -430,7 +431,7 @@ async def abilities(ctx,champion:str):
     # lore = championInfo['data'][champion]['lore']
 
     embedVar = discord.Embed(color=EMBED_COLOR,title=champion+', '+title)
-    embedVar.set_thumbnail(url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/champion/"+champion+".png")
+    embedVar.set_thumbnail(url=DD_BASE_URL+"/img/champion/"+champion+".png")
     embedVar.add_field(name='Passive - ' + passive_name,value=passive_description,inline=False)
     embedVar.add_field(name='Q - '+q_name,value=q_description,inline=False)
     embedVar.add_field(name='W - '+w_name,value=w_description,inline=False)
@@ -473,7 +474,7 @@ async def lore(ctx,champion:str):
     lore = championInfo['data'][champion]['lore']
 
     embedVar = discord.Embed(color=EMBED_COLOR,title=champion+', '+title)
-    embedVar.set_thumbnail(url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/champion/"+champion+".png")
+    embedVar.set_thumbnail(url=DD_BASE_URL+"/img/champion/"+champion+".png")
     embedVar.add_field(name='Lore',value=lore+'\n\n'+"To learn more about "+champion+', '+title+", visit the Riot Games Universe [website](https://universe.leagueoflegends.com/en_US/story/champion/"+champion+"/).",inline=False)
 
     await ctx.send(embed=embedVar)
@@ -556,7 +557,7 @@ async def livegame(ctx, username:str,region:str):
     embedVar = discord.Embed(color=EMBED_COLOR,title=MAP_ID_TO_NAME[CurrentGameInfo['mapId']]+" | "+QUEUE_ID_TO_NAME[CurrentGameInfo['gameQueueConfigId']]+' | '+ format_seconds(CurrentGameInfo['gameLength']))
 
     # get users profile pic and display
-    embedVar.set_author(name=username,icon_url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/profileicon/"+str(profileIconId)+".png")
+    embedVar.set_author(name=username,icon_url=DD_BASE_URL+"/img/profileicon/"+str(profileIconId)+".png")
     participants = CurrentGameInfo['participants']
 
     # display members of blue and red teams by position and champion
@@ -620,7 +621,7 @@ async def livegame(ctx, username:str,region:str):
     # display user's champion as thumbnail
     participants = CurrentGameInfo['participants']
     championId = [i['championId'] for i in participants if i['summonerName'].lower() == username.lower()][0]
-    embedVar.set_thumbnail(url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/champion/"+CHAMPION_ID_TO_NAME[championId]+".png")
+    embedVar.set_thumbnail(url=DD_BASE_URL+"/img/champion/"+CHAMPION_ID_TO_NAME[championId]+".png")
     await message.edit(content="",embed=embedVar)
 
 
@@ -709,8 +710,8 @@ async def mastery(ctx, username:str,champion:str,region:str):
     embedVar = discord.Embed(color=EMBED_COLOR)
 
     # double dictionary lookup to ensure URL has upper/lowercasing consistent with riots api, regardless of user input
-    embedVar.set_thumbnail(url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/champion/"+champion+".png")
-    embedVar.set_author(name=username,icon_url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/profileicon/"+str(profileIconId)+".png")
+    embedVar.set_thumbnail(url=DD_BASE_URL+"/img/champion/"+champion+".png")
+    embedVar.set_author(name=username,icon_url=DD_BASE_URL+"/img/profileicon/"+str(profileIconId)+".png")
     embedVar.add_field(name=champion,value=str(mastery_dto['championPoints'])+" points",inline=False)
 
     # convert from ms to s
@@ -813,8 +814,8 @@ async def topmastery(ctx,username:str,region:str):
         mastery_str += 'Level '+str(i['championLevel'])+'\n'
 
     embedVar = discord.Embed(color=EMBED_COLOR,title="Top 10 Mastered Champions")
-    embedVar.set_thumbnail(url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/champion/"+CHAMPION_ID_TO_NAME[top_10[0]['championId']]+".png")
-    embedVar.set_author(name=username,icon_url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/profileicon/"+str(profileIconId)+".png")
+    embedVar.set_thumbnail(url=DD_BASE_URL+"/img/champion/"+CHAMPION_ID_TO_NAME[top_10[0]['championId']]+".png")
+    embedVar.set_author(name=username,icon_url=DD_BASE_URL+"/img/profileicon/"+str(profileIconId)+".png")
     embedVar.add_field(name="Champion",value=champion_str,inline=True)
     embedVar.add_field(name="Points",value=point_str,inline=True)
     embedVar.add_field(name="Mastery",value=mastery_str,inline=True)
@@ -950,8 +951,8 @@ async def championstats(ctx,region:str,username:str,champion:str,queueId:int):
 
     embedVar = discord.Embed(color=EMBED_COLOR,title=champion + " Stats ["+queueName+"]")
     # double dictionary lookup to ensure URL has upper/lowercasing consistent with riots api, regardless of user input
-    embedVar.set_thumbnail(url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/champion/"+champion+".png")
-    embedVar.set_author(name=username,icon_url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/profileicon/"+str(profileIconId)+".png")
+    embedVar.set_thumbnail(url=DD_BASE_URL+"/img/champion/"+champion+".png")
+    embedVar.set_author(name=username,icon_url=DD_BASE_URL+"/img/profileicon/"+str(profileIconId)+".png")
 
     embedVar.add_field(name='Kills',value="{:.2f}".format(df['kills'][0]),inline=True)
     embedVar.add_field(name='Deaths',value="{:.2f}".format(df['deaths'][0]),inline=True)
@@ -1102,7 +1103,7 @@ async def duostats(ctx,region:str,username1:str,username2:str,queueId:int):
 
 
     embedVar = discord.Embed(color=EMBED_COLOR,title=username2+" Duo Stats ["+queueName+"]")
-    embedVar.set_author(name=username,icon_url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/profileicon/"+str(profileIconId)+".png")
+    embedVar.set_author(name=username,icon_url=DD_BASE_URL+"/img/profileicon/"+str(profileIconId)+".png")
 
     # WR and total games played
     wr = duo_df['win'].mean()
@@ -1277,8 +1278,8 @@ async def mostplayed(ctx,region:str,username:str,queueId:int):
 
     embedVar = discord.Embed(color=EMBED_COLOR,title="Top 10 played champions in "+queueName)
     # double dictionary lookup to ensure URL has upper/lowercasing consistent with riots api, regardless of user input
-    embedVar.set_thumbnail(url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/champion/"+top10[0]+".png")
-    embedVar.set_author(name=username,icon_url="http://ddragon.leagueoflegends.com/cdn/11.11.1/img/profileicon/"+str(profileIconId)+".png")
+    embedVar.set_thumbnail(url=DD_BASE_URL+"/img/champion/"+top10[0]+".png")
+    embedVar.set_author(name=username,icon_url=DD_BASE_URL+"/img/profileicon/"+str(profileIconId)+".png")
 
     embedVar.add_field(name="Champion",value=champion_str,inline=True)
     embedVar.add_field(name="K/DA",value=kda_str,inline=True)
@@ -1328,6 +1329,7 @@ def get_matches_from_db(encryptedAccountID,mv,sv4):
         for id in matchList:
             # MAKE REQUEST GETMATCH and check for valid response
             match = mv.get_match(id)
+            print(id)
 
             if match == -1:
                 if len(objects) > 0:
@@ -1359,7 +1361,7 @@ def get_matches_from_db(encryptedAccountID,mv,sv4):
                     "gameId":id,
                     "queueId":match['queueId'],
                     "championId":player_stats['championId'],
-                    "championName":CHAMPION_ID_TO_NAME[player_stats['championId']],
+                    "championName":player_stats['championName'],
                     "lane":player_stats['lane'],
                     "role":player_stats['role'],
                     "timestamp":match['gameCreation'],
@@ -1421,7 +1423,7 @@ def lane(lane,role):
         return lane
     if lane == "JUNGLE":
         return lane
-    if lane =="BOTTOM" and role=="DUO_CARRY":
+    if lane =="BOTTOM" and role=="CARRY":
         return "ADC"
     else:
         return "SUPPORT"

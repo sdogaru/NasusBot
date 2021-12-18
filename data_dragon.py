@@ -2,7 +2,8 @@ import requests
 
 #access static data to create a dictionary of championIDs
 version_no = requests.get("https://ddragon.leagueoflegends.com/api/versions.json").json()[0]
-champion_static_data = requests.get("http://ddragon.leagueoflegends.com/cdn/" +version_no+"/data/en_US/champion.json")
+DD_BASE_URL = "http://ddragon.leagueoflegends.com/cdn/" +version_no
+champion_static_data = requests.get(DD_BASE_URL+"/data/en_US/champion.json")
 champion_data_dicts= champion_static_data.json().get('data')
 
 #champion ID:Champion dictionary
@@ -32,7 +33,7 @@ RED_TEAM_ID = 200
 
 def get_champion_json(champion):
     # get tips from static datadragon that riot provides
-    r = requests.get('http://ddragon.leagueoflegends.com/cdn/11.12.1/data/en_US/champion/'+champion+'.json')
+    r = requests.get(DD_BASE_URL+'/data/en_US/champion/'+champion+'.json')
     if r.status_code != 200:
         print(r.status_code)
         return -1
